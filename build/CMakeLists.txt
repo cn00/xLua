@@ -111,19 +111,23 @@ else ()
 endif ()
 
 set ( LUA_SOCKET
-    luasocket/auxiliar.c
     luasocket/buffer.c
-    luasocket/except.c
-    luasocket/inet.c
+    luasocket/serial.c
+    luasocket/compat.c
     luasocket/io.c
-    luasocket/luasocket.c
-    luasocket/mime.c
-    luasocket/options.c
-    luasocket/select.c
-    luasocket/tcp.c
     luasocket/timeout.c
+    luasocket/select.c
+    luasocket/unix.c
     luasocket/udp.c
-    luasocket/luasocket_scripts.c
+    luasocket/mime.c
+    luasocket/unixdgram.c
+    luasocket/tcp.c
+    luasocket/auxiliar.c
+    luasocket/unixstream.c
+    luasocket/inet.c
+    luasocket/luasocket.c
+    luasocket/except.c
+    luasocket/options.c
 )
 
 if ( WIN32 AND NOT CYGWIN )

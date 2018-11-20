@@ -15,8 +15,15 @@
 #define LUASOCKET_COPYRIGHT  "Copyright (C) 1999-2013 Diego Nehab"
 
 /*-------------------------------------------------------------------------*\
+* This macro prefixes all exported API functions
+\*-------------------------------------------------------------------------*/
+#ifndef LUASOCKET_API
+#define LUASOCKET_API extern
+#endif
+
+/*-------------------------------------------------------------------------*\
 * Initializes the library.
 \*-------------------------------------------------------------------------*/
-LUA_API int luaopen_socket_core(lua_State *L);
+LUASOCKET_API int luaopen_socket_core(lua_State *L);
 
 #endif /* LUASOCKET_H */
