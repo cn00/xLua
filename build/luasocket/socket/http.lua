@@ -113,7 +113,6 @@ local metat = { __index = {} }
 function _M.open(host, port, create)
     -- create socket with user connect function, or with default
     local c = socket.try((create or socket.tcp)())
-    print("open c:", c)
     local h = base.setmetatable({ c = c }, metat)
     -- create finalized try
     h.try = socket.newtry(function() h:close() end)
