@@ -42,6 +42,10 @@ extern "C" {
 #include <sys/mman.h>
 #endif
 
+#include <complex.h>
+#define HAVE_COMPLEX
+#define HAVE_LONG_DOUBLE
+
 #ifndef NDEBUG
 #define DASM_CHECKS
 #endif
@@ -51,6 +55,8 @@ struct jit;
 #define Dst_REF		(Dst->ctx)
 #define DASM_EXTERN(a,b,c,d) get_extern(a,b,c,d)
 
+#include "dynasm/dasm_proto.h"
+
 #if defined LUA_FFI_BUILD_AS_DLL
 # define EXPORT __declspec(dllexport)
 #elif defined __GNUC__
@@ -58,6 +64,8 @@ struct jit;
 #else
 # define EXPORT
 #endif
+
+EXTERN_C EXPORT int luaopen_ffi(lua_State* L);
 
 static int lua_absindex2(lua_State* L, int idx) {
     return (LUA_REGISTRYINDEX <= idx && idx < 0)
@@ -194,6 +202,7 @@ struct page {
 struct jit {
     lua_State* L;
     int32_t last_errno;
+    dasm_State* ctx;
     size_t pagenum;
     struct page** pages;
     size_t align_page_size;
@@ -223,8 +232,11 @@ struct jit {
 #define ALIGNED_DEFAULT PTR_ALIGN_MASK
 #endif
 
+extern int jit_key;
 extern int ctype_mt_key;
 extern int cdata_mt_key;
+extern int cmodule_mt_key;
+extern int callback_mt_key;
 extern int constants_key;
 extern int types_key;
 extern int gc_key;
@@ -238,6 +250,7 @@ extern int asmname_key;
 int equals_upval(lua_State* L, int idx, int* key);
 void push_upval(lua_State* L, int* key);
 void set_upval(lua_State* L, int* key);
+struct jit* get_jit(lua_State* L);
 
 /* both ctype and cdata are stored as userdatas
  *
@@ -344,6 +357,8 @@ struct cdata {
       ;
 };
 
+typedef void (*cfunction)(void);
+
 #ifdef HAVE_COMPLEX
 typedef double complex complex_double;
 typedef float complex complex_float;
@@ -390,6 +405,7 @@ static float cimagf(complex_float c) {
 void set_defined(lua_State* L, int ct_usr, struct ctype* ct);
 struct ctype* push_ctype(lua_State* L, int ct_usr, const struct ctype* ct);
 void* push_cdata(lua_State* L, int ct_usr, const struct ctype* ct); /* called from asm */
+void push_callback(lua_State* L, cfunction luafunc, cfunction cfunc);
 void check_ctype(lua_State* L, int idx, struct ctype* ct);
 void* to_cdata(lua_State* L, int idx, struct ctype* ct);
 void* check_cdata(lua_State* L, int idx, struct ctype* ct);
@@ -403,7 +419,11 @@ int push_user_mt(lua_State* L, int ct_usr, const struct ctype* ct);
 
 int ffi_cdef(lua_State* L);
 
+void push_func_ref(lua_State* L, cfunction func);
+void free_code(struct jit* jit, lua_State* L, cfunction func);
 int x86_return_size(lua_State* L, int usr, const struct ctype* ct);
+void compile_function(lua_State* L, cfunction f, int ct_usr, const struct ctype* ct);
+cfunction compile_callback(lua_State* L, int fidx, int ct_usr, const struct ctype* ct);
 void compile_globals(struct jit* jit, lua_State* L);
 int get_extern(struct jit* jit, uint8_t* addr, int idx, int type);
 
@@ -420,6 +440,7 @@ uintptr_t check_uintptr(lua_State* L, int idx);
 int32_t check_enum(lua_State* L, int idx, int to_usr, const struct ctype* tt);
 /* these two will always push a value so that we can create structs/functions on the fly */
 void* check_typed_pointer(lua_State* L, int idx, int to_usr, const struct ctype* tt);
+cfunction check_typed_cfunction(lua_State* L, int idx, int to_usr, const struct ctype* tt);
 complex_double check_complex_double(lua_State* L, int idx);
 complex_float check_complex_float(lua_State* L, int idx);
 

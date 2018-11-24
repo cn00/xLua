@@ -182,6 +182,16 @@ void* push_cdata(lua_State* L, int ct_usr, const struct ctype* ct)
     return cd+1;
 }
 
+void push_callback(lua_State* L, cfunction luafunc, cfunction cfunc)
+{
+    cfunction* pf = (cfunction*) lua_newuserdata(L, 2 * sizeof(cfunction));
+    pf[0] = luafunc;
+    pf[1] = cfunc;
+
+    push_upval(L, &callback_mt_key);
+    lua_setmetatable(L, -2);
+}
+
 /* returns the value as a ctype, pushes the user value onto the stack */
 void check_ctype(lua_State* L, int idx, struct ctype* ct)
 {

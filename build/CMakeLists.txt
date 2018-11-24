@@ -51,7 +51,12 @@ set (THIRDPART_SRC ${THIRDPART_SRC} ${LPEG_SRC})
 
 #begin FFI
 if (NOT USING_LUAJIT)
-	set (FFI_SRC ffi/parser.c ffi/ctype.c ffi/ffi.c)
+    set (FFI_SRC 
+        ffi/parser.c 
+        ffi/ctype.c 
+        ffi/call.c
+        ffi/ffi.c
+    )
 	set_property(
 		SOURCE ${FFI_SRC}
 		APPEND
