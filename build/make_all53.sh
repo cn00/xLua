@@ -6,4 +6,4 @@ cd $(dirname $0;pwd)
 ./make_osx_lua53.sh 
 
 cd $(dirname $0;pwd)
-./make_abdriud_lua53.sh 
+./make_andriud_lua53.sh 
