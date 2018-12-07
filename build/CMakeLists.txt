@@ -33,23 +33,6 @@ find_path(XLUA_PROJECT_DIR NAMES SConstruct
 
 MARK_AS_ADVANCED(XLUA_PROJECT_DIR)
 
-# #begin NSLua
-# if ( IOS )
-# set ( NSLua_SRC
-#     NSLua/NSLua.m
-#     NSLua/LuaBridgedFunctions.m
-# )
-# set_property(
-#     SOURCE ${NSLua_SRC}
-#     APPEND
-#     PROPERTY COMPILE_DEFINITIONS
-#     LUA_LIB
-# )
-# list(APPEND THIRDPART_INC  NSLua)
-# set (THIRDPART_SRC ${THIRDPART_SRC} ${NSLua_SRC})
-# endif (IOS)
-# #end NSLua
-
 #begin lpeg
 set ( LPEG_SRC
     lpeg/lpcap.c
