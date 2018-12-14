@@ -590,7 +590,7 @@ namespace XLua
         [MonoPInvokeCallback(typeof(LuaCSFunction))]
         internal static int Panic(RealStatePtr L)
         {
-            string reason = String.Format("[App] unprotected error in call to Lua API ({0})", LuaAPI.lua_tostring(L, -1));
+            string reason = String.Format("unprotected error in call to Lua API ({0})", LuaAPI.lua_tostring(L, -1));
             throw new LuaException(reason);
         }
 
