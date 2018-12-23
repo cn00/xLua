@@ -22,6 +22,7 @@ if ( IOS )
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fembed-bitcode")
 endif ()
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DLUAINTF_LINK_LUA_COMPILED_IN_CXX=0")
 option ( UINT_ESPECIALLY "using custom ulong" OFF )
 option ( USING_LUAJIT "using luajit" OFF )
 
@@ -32,6 +33,24 @@ find_path(XLUA_PROJECT_DIR NAMES SConstruct
     )
 
 MARK_AS_ADVANCED(XLUA_PROJECT_DIR)
+
+
+macro(source_group_by_dir proj_dir source_files)
+    if(MSVC OR APPLE)
+        get_filename_component(sgbd_cur_dir ${proj_dir} ABSOLUTE)
+        foreach(sgbd_file ${${source_files}})
+			get_filename_component(sgbd_abs_file ${sgbd_file} ABSOLUTE)
+            file(RELATIVE_PATH sgbd_fpath ${sgbd_cur_dir} ${sgbd_abs_file})
+            string(REGEX REPLACE "\(.*\)/.*" \\1 sgbd_group_name ${sgbd_fpath})
+            string(COMPARE EQUAL ${sgbd_fpath} ${sgbd_group_name} sgbd_nogroup)
+            string(REPLACE "/" "\\" sgbd_group_name ${sgbd_group_name})
+            if(sgbd_nogroup)
+                set(sgbd_group_name "\\")
+            endif(sgbd_nogroup)
+            source_group(${sgbd_group_name} FILES ${sgbd_file})
+        endforeach(sgbd_file)
+    endif(MSVC OR APPLE)
+endmacro(source_group_by_dir)
 
 #begin lpeg
 set ( LPEG_SRC
@@ -49,6 +68,7 @@ set_property(
 )
 list(APPEND THIRDPART_INC  lpeg)
 set (THIRDPART_SRC ${THIRDPART_SRC} ${LPEG_SRC})
+source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LPEG_SRC)
 #end lpeg
 
 #begin FFI
@@ -68,7 +88,35 @@ if (NOT USING_LUAJIT)
 	list(APPEND THIRDPART_INC  ffi)
 	set (THIRDPART_SRC ${THIRDPART_SRC} ${FFI_SRC})
 endif ()
+source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} FFI_SRC)
 #end FFI
+
+#begin LFB
+include_directories(
+    ${CMAKE_SOURCE_DIR}
+    lfb/src/flatbuffers/include
+    lfb/src
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${THIRDPART_INC}
+)
+set (LFB_SRC 
+    lfb/src/lflatbuffers_encode.cpp
+    lfb/src/lflatbuffers_decode.cpp
+    lfb/src/lflatbuffers.cpp
+
+    lfb/src/flatbuffers/util.cpp
+    lfb/src/flatbuffers/reflection.cpp
+)
+set_property(
+    SOURCE ${LFB_SRC}
+    APPEND
+    PROPERTY COMPILE_DEFINITIONS
+    LUA_LIB
+)
+list(APPEND THIRDPART_INC  lfb)
+set (THIRDPART_SRC ${THIRDPART_SRC} ${LFB_SRC})
+source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LFB_SRC)
+#end LFB
 
 if (USING_LUAJIT)
 	
@@ -149,22 +197,22 @@ set ( XLUA_CORE
     xlua.c
 )
 
-macro(source_group_by_dir proj_dir source_files)
-    if(MSVC OR APPLE)
-        get_filename_component(sgbd_cur_dir ${proj_dir} ABSOLUTE)
-        foreach(sgbd_file ${${source_files}})
-			get_filename_component(sgbd_abs_file ${sgbd_file} ABSOLUTE)
-            file(RELATIVE_PATH sgbd_fpath ${sgbd_cur_dir} ${sgbd_abs_file})
-            string(REGEX REPLACE "\(.*\)/.*" \\1 sgbd_group_name ${sgbd_fpath})
-            string(COMPARE EQUAL ${sgbd_fpath} ${sgbd_group_name} sgbd_nogroup)
-            string(REPLACE "/" "\\" sgbd_group_name ${sgbd_group_name})
-            if(sgbd_nogroup)
-                set(sgbd_group_name "\\")
-            endif(sgbd_nogroup)
-            source_group(${sgbd_group_name} FILES ${sgbd_file})
-        endforeach(sgbd_file)
-    endif(MSVC OR APPLE)
-endmacro(source_group_by_dir)
+# macro(source_group_by_dir proj_dir source_files)
+#     if(MSVC OR APPLE)
+#         get_filename_component(sgbd_cur_dir ${proj_dir} ABSOLUTE)
+#         foreach(sgbd_file ${${source_files}})
+# 			get_filename_component(sgbd_abs_file ${sgbd_file} ABSOLUTE)
+#             file(RELATIVE_PATH sgbd_fpath ${sgbd_cur_dir} ${sgbd_abs_file})
+#             string(REGEX REPLACE "\(.*\)/.*" \\1 sgbd_group_name ${sgbd_fpath})
+#             string(COMPARE EQUAL ${sgbd_fpath} ${sgbd_group_name} sgbd_nogroup)
+#             string(REPLACE "/" "\\" sgbd_group_name ${sgbd_group_name})
+#             if(sgbd_nogroup)
+#                 set(sgbd_group_name "\\")
+#             endif(sgbd_nogroup)
+#             source_group(${sgbd_group_name} FILES ${sgbd_file})
+#         endforeach(sgbd_file)
+#     endif(MSVC OR APPLE)
+# endmacro(source_group_by_dir)
 
 source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LUA_SOCKET)
 source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LUA_CORE)
