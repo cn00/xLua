@@ -1,9 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 using XLua;
-
-[CSharpCallLua]
-public delegate int TestOutDelegate(HotfixCalc calc, int a, out double b, ref string c);
 
 [Hotfix]
 public class HotfixCalc
@@ -164,7 +160,7 @@ public struct StructTest
     }
 }
 
-[Hotfix(HotfixFlag.Stateful)]
+[Hotfix]
 public struct GenericStruct<T>
 {
     T a;
@@ -279,16 +275,17 @@ public class HotfixTest2 : MonoBehaviour {
         System.GC.Collect();
         System.GC.WaitForPendingFinalizers();
         luaenv.DoString(@"
+            local util = require 'xlua.util'
             xlua.hotfix(CS.StatefullTest, {
                 ['.ctor'] = function(csobj)
-                    return {evt = {}, start = 0}
+                    util.state(csobj, {evt = {}, start = 0, prop = 0})
                 end;
                 set_AProp = function(self, v)
                     print('set_AProp', v)
-                    self.AProp = v
+                    self.prop = v
                 end;
                 get_AProp = function(self)
-                    return self.AProp
+                    return self.prop
                 end;
                 get_Item = function(self, k)
                     print('get_Item', k)
@@ -338,7 +335,7 @@ public class HotfixTest2 : MonoBehaviour {
         genericObj.Func1();
         Debug.Log(genericObj.Func2());
         luaenv.DoString(@"
-            xlua.hotfix(CS['GenericClass`1[System.Double]'], {
+            xlua.hotfix(CS.GenericClass(CS.System.Double), {
                 ['.ctor'] = function(obj, a)
                     print('GenericClass<double>', obj, a)
                 end;
@@ -378,7 +375,7 @@ public class HotfixTest2 : MonoBehaviour {
         GenericStruct<int> gs = new GenericStruct<int>(1);
         Debug.Log("gs.GetA()=" + gs.GetA(123));
         luaenv.DoString(@"
-            xlua.hotfix(CS['GenericStruct`1[System.Int32]'], 'GetA', function(self, a)
+            xlua.hotfix(CS.GenericStruct(CS.System.Int32), 'GetA', function(self, a)
                     print('GetA',self, a)
                     return 789
                 end)
@@ -402,7 +399,6 @@ public class HotfixTest2 : MonoBehaviour {
         luaenv.DoString(@"
             xlua.hotfix(CS.BaseTest, 'Foo', function(self, p)
                     print('BaseTest', p)
-                    base(self):Foo(p)
                 end)
             xlua.hotfix(CS.BaseTest, 'ToString', function(self)
                     return '>>>' .. base(self):ToString()
