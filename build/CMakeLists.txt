@@ -119,6 +119,37 @@ set (THIRDPART_SRC ${THIRDPART_SRC} ${LFB_SRC})
 source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LFB_SRC)
 #end LFB
 
+#begin P7ZIP
+
+include_directories(
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${THIRDPART_INC}
+    p7zip
+    p7zip/p7zip/CPP
+    p7zip/p7zip/CPP/Common
+    p7zip/p7zip/CPP/myWindows
+    p7zip/p7zip/CPP/include_windows
+)
+file(GLOB_RECURSE P7ZIP_SRC
+    p7zip/*.h
+    p7zip/*.c
+    p7zip/*.cpp
+)
+set_property(
+    SOURCE ${P7ZIP_SRC}
+    APPEND
+    PROPERTY COMPILE_DEFINITIONS
+    LUA_LIB
+)
+list(APPEND THIRDPART_INC  p7zip)
+set (THIRDPART_SRC ${THIRDPART_SRC} ${P7ZIP_SRC})
+source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} P7ZIP_SRC)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -DNDEBUG -D_REENTRANT -DENV_UNIX")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBREAK_HANDLER -DUNICODE -D_UNICODE -DUNIX_USE_WIN_FILE -fPIC")
+
+#end P7ZIP
+
 set(LUA_SRC_PATH lua-5.3.5/src)
 set(LUAJIT_SRC_PATH luajit-2.1.0b3/src)
 
@@ -214,12 +245,13 @@ if (APPLE)
     if (IOS)
         set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD)")
         add_library(xlua STATIC
-           ${LUA_CORE}
-           ${LUA_LIB}
-           ${LUA_SOCKET}
-           ${XLUA_CORE}
-           ${THIRDPART_SRC}
-        )
+            ${LUA_CORE}
+            ${LUA_LIB}
+            ${LUA_SOCKET}
+            ${XLUA_CORE}
+            ${THIRDPART_SRC}
+            ${P7ZIP_SRCS}
+       )
 		set_xcode_property (xlua IPHONEOS_DEPLOYMENT_TARGET "7.0")
     else ()
         set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD_64_BIT)")
@@ -229,10 +261,20 @@ if (APPLE)
             ${LUA_SOCKET}
             ${XLUA_CORE}
             ${THIRDPART_SRC}
+            ${P7ZIP_SRCS}
         )
         set_target_properties ( xlua PROPERTIES BUNDLE TRUE )
         #set_target_properties ( xlua PROPERTIES FRAMEWORK TRUE )
         #set_target_properties ( xlua PROPERTIES MACOSX_RPATH TRUE )
+
+        find_library(ObjC objc)
+        find_library(CoreFoundation CoreFoundation)
+        find_library(IOKit IOKit)
+        target_link_libraries(xlua 
+            ${CoreFoundation} 
+            ${IOKit} 
+            ${ObjC}
+        )
     endif ()
 elseif ("${CMAKE_SYSTEM_NAME}" STREQUAL "Switch")
     add_library(xlua STATIC
@@ -240,6 +282,7 @@ elseif ("${CMAKE_SYSTEM_NAME}" STREQUAL "Switch")
         ${LUA_LIB}
         ${XLUA_CORE}
         ${THIRDPART_SRC}
+        ${P7ZIP_SRCS}
     )
     target_compile_options(xlua PRIVATE -m64 -mcpu=cortex-a57+fp+simd+crypto+crc -fno-common -fno-short-enums -ffunction-sections -fdata-sections -fPIC -fms-extensions)
 else ( )
@@ -249,6 +292,7 @@ else ( )
         ${LUA_SOCKET}
         ${XLUA_CORE}
         ${THIRDPART_SRC}
+        ${P7ZIP_SRCS}
     )
 endif ( )
 
@@ -274,7 +318,7 @@ set_property(
 if(UINT_ESPECIALLY)
     ADD_DEFINITIONS(-DUINT_ESPECIALLY)
 endif()
-	
+
 if ( WIN32 AND NOT CYGWIN )
     if (USING_LUAJIT)
         target_link_libraries(xlua
