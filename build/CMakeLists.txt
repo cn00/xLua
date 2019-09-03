@@ -16,10 +16,8 @@ endif ()
 project(XLua)
 
 if ( IOS )
-    set(CMAKE_C_COMPILER "clang")
-    set(CMAKE_CXX_COMPILER "clang++")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fembed-bitcode")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fembed-bitcode")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fembed-bitcode")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fembed-bitcode")
 endif ()
 
 if(ANDROID)
@@ -28,6 +26,8 @@ if(ANDROID)
 endif(ANDROID)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DLUAINTF_LINK_LUA_COMPILED_IN_CXX=0")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -lm")
+
 option ( UINT_ESPECIALLY "using custom ulong" OFF )
 option ( USING_LUAJIT "using luajit" OFF )
 option ( GC64 "using gc64" OFF )
@@ -40,7 +40,6 @@ find_path(XLUA_PROJECT_DIR NAMES SConstruct
     )
 
 MARK_AS_ADVANCED(XLUA_PROJECT_DIR)
-
 macro(source_group_by_dir proj_dir source_files)
     if(MSVC OR APPLE)
         get_filename_component(sgbd_cur_dir ${proj_dir} ABSOLUTE)
@@ -160,7 +159,7 @@ set(LUAJIT_SRC_PATH luajit-2.1.0b3/src)
 
 if (USING_LUAJIT)
 	
-    if (APPLE AND NOT IOS)
+    if (APPLE AND NOT IOS AND NOT ANDROID)
 	    include_directories(
 		  ${CMAKE_SOURCE_DIR}
 		  lua-5.1.5/src
@@ -206,23 +205,18 @@ else ()
 endif ()
 
 set ( LUA_SOCKET
-    luasocket/buffer.c
-    luasocket/serial.c
-    luasocket/compat.c
-    luasocket/io.c
-    luasocket/timeout.c
-    luasocket/select.c
-    luasocket/unix.c
-    luasocket/udp.c
-    luasocket/mime.c
-    luasocket/unixdgram.c
-    luasocket/tcp.c
     luasocket/auxiliar.c
-    luasocket/unixstream.c
-    luasocket/inet.c
-    luasocket/luasocket.c
+    luasocket/buffer.c
     luasocket/except.c
+    luasocket/inet.c
+    luasocket/io.c
+    luasocket/luasocket.c
+    luasocket/mime.c
     luasocket/options.c
+    luasocket/select.c
+    luasocket/tcp.c
+    luasocket/timeout.c
+    luasocket/udp.c 
 )
 
 if ( WIN32 AND NOT CYGWIN )
@@ -233,7 +227,6 @@ endif ( )
 
 set ( XLUA_CORE
     i64lib.c
-    perflib.c
     xlua.c
 )
 
@@ -249,17 +242,8 @@ source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} XLUA_CORE)
 if (APPLE)
     if (IOS)
         set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD)")
-        add_library(xlua_static STATIC
-            ${LUA_CORE}
-            ${LUA_LIB}
-            ${LUA_SOCKET}
-            ${XLUA_CORE}
-            ${THIRDPART_SRC}
-            ${P7ZIP_SRCS}
-        )
-        set_xcode_property (xlua_static IPHONEOS_DEPLOYMENT_TARGET "8.0")
-        
         add_library(xlua SHARED
+            m
             ${LUA_CORE}
             ${LUA_LIB}
             ${LUA_SOCKET}
@@ -267,24 +251,32 @@ if (APPLE)
             ${THIRDPART_SRC}
             ${P7ZIP_SRCS}
         )
-        set_xcode_property(xlua DEVELOPMENT_TEAM "UL9WJVVZ42")
-
+    	set_xcode_property (xlua IPHONEOS_DEPLOYMENT_TARGET "8.0" "all")
+            add_library(xlua_static STATIC
+                ${LUA_CORE}
+                ${LUA_LIB}
+                ${LUA_SOCKET}
+                ${XLUA_CORE}
+                ${THIRDPART_SRC}
+                ${P7ZIP_SRCS}
+        )
+        set_xcode_property(xlua DEVELOPMENT_TEAM "UL9WJVVZ42" "all")
         set_target_properties(xlua PROPERTIES
-            # # FRAMEWORK begin
-            # FRAMEWORK TRUE
-            # FRAMEWORK_VERSION C
-            # MACOSX_FRAMEWORK_IDENTIFIER com.cmake.xlua
-            # MACOSX_FRAMEWORK_INFO_PLIST ../Info.plist
-            # PUBLIC_HEADER xlua.h
-            # # FRAMEWORK end
+            # FRAMEWORK begin
+            FRAMEWORK TRUE
+            FRAMEWORK_VERSION C
+            MACOSX_FRAMEWORK_IDENTIFIER com.cmake.xlua
+            MACOSX_FRAMEWORK_INFO_PLIST ../Info.plist
+            PUBLIC_HEADER xlua.h
+            # FRAMEWORK end
             IPHONEOS_DEPLOYMENT_TARGET "8.0"
             DYLIB_INSTALL_NAME_BASE "@rpath"
             XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "iPhone Developer"
             # https://stackoverflow.com/questions/40664125/cmake-and-code-signing-in-xcode-8-for-ios-projects
             DEVELOPMENT_TEAM "UL9WJVVZ42"
         )
-
     else ()
+        ADD_DEFINITIONS(-DLUA_USE_MACOSX) #osx platform emmylua debugger must have this option or can not load cpath
         set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD_64_BIT)")
         add_library(xlua MODULE
             ${LUA_CORE}
@@ -349,7 +341,7 @@ set_property(
 if(UINT_ESPECIALLY)
     ADD_DEFINITIONS(-DUINT_ESPECIALLY)
 endif()
-
+	
 if ( WIN32 AND NOT CYGWIN )
     if (USING_LUAJIT)
         target_link_libraries(xlua
