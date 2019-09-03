@@ -1,6 +1,6 @@
 [submodule "build/ffi"]
 	path = build/ffi
-	url = git@github.com:facebookarchive/luaffifb.git
+	url = git@github.com:cn00/luaffifb.git
 [submodule "build/p7zip/p7zip"]
 	path = build/p7zip/p7zip
 	url = git@github.com:cn00/7z.git
