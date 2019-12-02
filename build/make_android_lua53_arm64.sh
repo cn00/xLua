@@ -7,7 +7,7 @@ set -x
 thisdir=$(cd `dirname $0`;pwd)
 cd "$thisdir"
 
-distdir="$thisdir/../Assets/XLua"
+distdir="$thisdir/../Assets"
 
 mkdir -p $thisdir/build_v7a && pushd $_
 cmake -Wno-dev -DANDROID_ABI=armeabi-v7a -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK/build/cmake/android.toolchain.cmake -DANDROID_TOOLCHAIN_NAME=arm-linux-androideabi-clang -DANDROID_NATIVE_API_LEVEL=android-9 ../
