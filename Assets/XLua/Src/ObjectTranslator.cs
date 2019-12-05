@@ -1148,7 +1148,7 @@ namespace XLua
             {
                 LuaAPI.lua_pushstring(L, o as string);
             }
-            else if (type == typeof(byte[]))
+            else if (o is byte[])
             {
                 LuaAPI.lua_pushstring(L, o as byte[]);
             }
