@@ -4,7 +4,7 @@
 # http://opensource.org/licenses/MIT
 # Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
 
 if ( WIN32 AND NOT CYGWIN AND NOT ( CMAKE_SYSTEM_NAME STREQUAL "WindowsStore" ) AND NOT ANDROID)
 	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MT" CACHE STRING "")
@@ -240,10 +240,33 @@ source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LUA_LIB)
 source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} XLUA_CORE)
 
 if (APPLE)
+
+    # #begin NSLUA
+    # include_directories(
+    #     ${CMAKE_SOURCE_DIR}
+    #     nslua
+    #     ${CMAKE_CURRENT_BINARY_DIR}
+    #     ${THIRDPART_INC}
+    # )
+    # file(GLOB_RECURSE NSLUA_SRC
+    #     nslua/*.h
+    #     nslua/*.m
+    # )
+    # set_property(
+    #     SOURCE ${NSLUA_SRC}
+    #     APPEND
+    #     PROPERTY COMPILE_DEFINITIONS
+    #     LUA_LIB
+    # )
+    # list(APPEND THIRDPART_INC  nslua)
+    # set (THIRDPART_SRC ${THIRDPART_SRC} ${NSLUA_SRC})
+    # source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} NSLUA_SRC)
+    # #end NSLUA
+
+    set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD)")
     if (IOS)
-        set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD)")
         add_library(xlua SHARED
-            m
+            # m
             ${LUA_CORE}
             ${LUA_LIB}
             ${LUA_SOCKET}
@@ -252,30 +275,31 @@ if (APPLE)
             ${P7ZIP_SRCS}
         )
     	set_xcode_property (xlua IPHONEOS_DEPLOYMENT_TARGET "8.0" "all")
-            add_library(xlua_static STATIC
-                ${LUA_CORE}
-                ${LUA_LIB}
-                ${LUA_SOCKET}
-                ${XLUA_CORE}
-                ${THIRDPART_SRC}
-                ${P7ZIP_SRCS}
-        )
-        set_xcode_property(xlua DEVELOPMENT_TEAM "UL9WJVVZ42" "all")
+        # add_library(xlua_static STATIC
+        #     ${LUA_CORE}
+        #     ${LUA_LIB}
+        #     ${LUA_SOCKET}
+        #     ${XLUA_CORE}
+        #     ${THIRDPART_SRC}
+        #     ${P7ZIP_SRCS}
+        # )
+        # set_xcode_property(xlua DEVELOPMENT_TEAM "UL9WJVVZ42" "all")
         set_target_properties(xlua PROPERTIES
-            # FRAMEWORK begin
-            FRAMEWORK TRUE
-            FRAMEWORK_VERSION C
-            MACOSX_FRAMEWORK_IDENTIFIER com.cmake.xlua
-            MACOSX_FRAMEWORK_INFO_PLIST ../Info.plist
-            PUBLIC_HEADER xlua.h
-            # FRAMEWORK end
+            SUFFIX .so
+            # # FRAMEWORK begin
+            # FRAMEWORK TRUE
+            # FRAMEWORK_VERSION C
+            # MACOSX_FRAMEWORK_IDENTIFIER com.cmake.xlua
+            # MACOSX_FRAMEWORK_INFO_PLIST ../Info.plist
+            # PUBLIC_HEADER xlua.h
+            # # FRAMEWORK end
             IPHONEOS_DEPLOYMENT_TARGET "8.0"
             DYLIB_INSTALL_NAME_BASE "@rpath"
             XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "iPhone Developer"
-            # https://stackoverflow.com/questions/40664125/cmake-and-code-signing-in-xcode-8-for-ios-projects
-            DEVELOPMENT_TEAM "UL9WJVVZ42"
+            # # https://stackoverflow.com/questions/40664125/cmake-and-code-signing-in-xcode-8-for-ios-projects
+            DEVELOPMENT_TEAM "D2JNH2GMKP"
         )
-    else ()
+    else () # osx
         ADD_DEFINITIONS(-DLUA_USE_MACOSX) #osx platform emmylua debugger must have this option or can not load cpath
         set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD_64_BIT)")
         add_library(xlua MODULE
@@ -290,15 +314,31 @@ if (APPLE)
         #set_target_properties ( xlua PROPERTIES FRAMEWORK TRUE )
         #set_target_properties ( xlua PROPERTIES MACOSX_RPATH TRUE )
 
+        # find_library(ObjC objc)
+        # find_library(CoreFoundation CoreFoundation)
+        # find_library(IOKit IOKit)
+        # target_link_libraries(xlua 
+        #     ${CoreFoundation} 
+        #     ${IOKit} 
+        #     ${ObjC}
+        # )
+    endif ()
+
         find_library(ObjC objc)
         find_library(CoreFoundation CoreFoundation)
         find_library(IOKit IOKit)
+        find_library(UIKit UIKit)
+        find_library(CoreImage CoreImage)
+        find_library(CoreGraphics CoreGraphics)
         target_link_libraries(xlua 
             ${CoreFoundation} 
-            ${IOKit} 
+            ${IOKit}
+            ${UIKit}
             ${ObjC}
+            ${CoreImage}
+            ${CoreGraphics}
         )
-    endif ()
+
 elseif ("${CMAKE_SYSTEM_NAME}" STREQUAL "Switch")
     add_library(xlua STATIC
         ${LUA_CORE}
