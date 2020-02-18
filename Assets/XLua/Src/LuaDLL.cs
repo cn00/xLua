@@ -34,9 +34,9 @@ namespace XLua.LuaDLL
     public partial class Lua
 	{
 #if (UNITY_IPHONE || UNITY_WEBGL || UNITY_SWITCH) && !UNITY_EDITOR
-        const string LUADLL = "__Internal";
+        public const string LUADLL = "__Internal";
 #else
-        const string LUADLL = "xlua";
+		public const string LUADLL = "xlua";
 #endif
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
