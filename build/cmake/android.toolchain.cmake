@@ -71,7 +71,7 @@ unset(ANDROID_NDK_EXPECTED_PATH)
 file(TO_CMAKE_PATH "${ANDROID_NDK}" ANDROID_NDK)
 
 ## environment
-set(ANDROID_NDK "/usr/local/Caskroom/android-ndk/18/android-ndk-r18")
+set(ANDROID_NDK "/usr/local/Cellar/android-sdk/24.3.3/ndk-bundle")
 set(ANDROID_TOOLCHAIN clang)
 
 # Android NDK revision
