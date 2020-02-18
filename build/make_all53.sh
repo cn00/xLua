@@ -7,3 +7,6 @@ cd $(dirname $0;pwd)
 
 cd $(dirname $0;pwd)
 ./make_android_lua53.sh 
+
+cd $(dirname $0;pwd)
+./make_android_lua53_arm64.sh 

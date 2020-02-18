@@ -16,13 +16,18 @@ endif ()
 project(XLua)
 
 if ( IOS )
-    set(CMAKE_C_COMPILER "clang")
-    set(CMAKE_CXX_COMPILER "clang++")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fembed-bitcode")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fembed-bitcode")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fembed-bitcode")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fembed-bitcode")
 endif ()
 
+if(ANDROID)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DANDROID_NDK -fexceptions -DNDEBUG -D_REENTRANT -DENV_UNIX")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBREAK_HANDLER -DUNICODE -D_UNICODE -DUNIX_USE_WIN_FILE -fPIC")
+endif(ANDROID)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DLUAINTF_LINK_LUA_COMPILED_IN_CXX=0")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -lm")
+
 option ( UINT_ESPECIALLY "using custom ulong" OFF )
 option ( USING_LUAJIT "using luajit" OFF )
 option ( GC64 "using gc64" OFF )
@@ -35,7 +40,6 @@ find_path(XLUA_PROJECT_DIR NAMES SConstruct
     )
 
 MARK_AS_ADVANCED(XLUA_PROJECT_DIR)
-
 macro(source_group_by_dir proj_dir source_files)
     if(MSVC OR APPLE)
         get_filename_component(sgbd_cur_dir ${proj_dir} ABSOLUTE)
@@ -119,12 +123,43 @@ set (THIRDPART_SRC ${THIRDPART_SRC} ${LFB_SRC})
 source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LFB_SRC)
 #end LFB
 
+#begin P7ZIP
+
+include_directories(
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${THIRDPART_INC}
+    p7zip/p7zip
+    p7zip/p7zip/CPP
+    p7zip/p7zip/CPP/Common
+    p7zip/p7zip/CPP/myWindows
+    p7zip/p7zip/CPP/include_windows
+)
+file(GLOB_RECURSE P7ZIP_SRC
+    p7zip/p7zip/*.h
+    p7zip/p7zip/*.c
+    p7zip/p7zip/*.cpp
+)
+set_property(
+    SOURCE ${P7ZIP_SRC}
+    APPEND
+    PROPERTY COMPILE_DEFINITIONS
+    LUA_LIB
+)
+list(APPEND THIRDPART_INC  p7zip)
+set (THIRDPART_SRC ${THIRDPART_SRC} ${P7ZIP_SRC})
+source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} P7ZIP_SRC)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -DNDEBUG -D_REENTRANT -DENV_UNIX")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBREAK_HANDLER -DUNICODE -D_UNICODE -DUNIX_USE_WIN_FILE -fPIC")
+
+#end P7ZIP
+
 set(LUA_SRC_PATH lua-5.3.5/src)
 set(LUAJIT_SRC_PATH luajit-2.1.0b3/src)
 
 if (USING_LUAJIT)
 	
-    if (APPLE AND NOT IOS)
+    if (APPLE AND NOT IOS AND NOT ANDROID)
 	    include_directories(
 		  ${CMAKE_SOURCE_DIR}
 		  lua-5.1.5/src
@@ -150,7 +185,7 @@ if (USING_LUAJIT)
     endif ()
 	set ( LUA_LIB )
 else ()
-	set ( LUA_IDSIZE 120 CACHE NUMBER "gives the maximum size for the description of the source." )
+	set ( LUA_IDSIZE 120 CACHE STRING "gives the maximum size for the description of the source." )
 
 	configure_file ( ${LUA_SRC_PATH}/luaconf.h.in ${CMAKE_CURRENT_BINARY_DIR}/luaconf.h )
 
@@ -170,23 +205,18 @@ else ()
 endif ()
 
 set ( LUA_SOCKET
-    luasocket/buffer.c
-    luasocket/serial.c
-    luasocket/compat.c
-    luasocket/io.c
-    luasocket/timeout.c
-    luasocket/select.c
-    luasocket/unix.c
-    luasocket/udp.c
-    luasocket/mime.c
-    luasocket/unixdgram.c
-    luasocket/tcp.c
     luasocket/auxiliar.c
-    luasocket/unixstream.c
-    luasocket/inet.c
-    luasocket/luasocket.c
+    luasocket/buffer.c
     luasocket/except.c
+    luasocket/inet.c
+    luasocket/io.c
+    luasocket/luasocket.c
+    luasocket/mime.c
     luasocket/options.c
+    luasocket/select.c
+    luasocket/tcp.c
+    luasocket/timeout.c
+    luasocket/udp.c 
 )
 
 if ( WIN32 AND NOT CYGWIN )
@@ -197,7 +227,6 @@ endif ( )
 
 set ( XLUA_CORE
     i64lib.c
-    perflib.c
     xlua.c
 )
 
@@ -213,15 +242,41 @@ source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} XLUA_CORE)
 if (APPLE)
     if (IOS)
         set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD)")
-        add_library(xlua STATIC
-           ${LUA_CORE}
-           ${LUA_LIB}
-           ${LUA_SOCKET}
-           ${XLUA_CORE}
-           ${THIRDPART_SRC}
+        add_library(xlua SHARED
+            m
+            ${LUA_CORE}
+            ${LUA_LIB}
+            ${LUA_SOCKET}
+            ${XLUA_CORE}
+            ${THIRDPART_SRC}
+            ${P7ZIP_SRCS}
         )
-		set_xcode_property (xlua IPHONEOS_DEPLOYMENT_TARGET "7.0")
+    	set_xcode_property (xlua IPHONEOS_DEPLOYMENT_TARGET "8.0" "all")
+            add_library(xlua_static STATIC
+                ${LUA_CORE}
+                ${LUA_LIB}
+                ${LUA_SOCKET}
+                ${XLUA_CORE}
+                ${THIRDPART_SRC}
+                ${P7ZIP_SRCS}
+        )
+        set_xcode_property(xlua DEVELOPMENT_TEAM "UL9WJVVZ42" "all")
+        set_target_properties(xlua PROPERTIES
+            # FRAMEWORK begin
+            FRAMEWORK TRUE
+            FRAMEWORK_VERSION C
+            MACOSX_FRAMEWORK_IDENTIFIER com.cmake.xlua
+            MACOSX_FRAMEWORK_INFO_PLIST ../Info.plist
+            PUBLIC_HEADER xlua.h
+            # FRAMEWORK end
+            IPHONEOS_DEPLOYMENT_TARGET "8.0"
+            DYLIB_INSTALL_NAME_BASE "@rpath"
+            XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "iPhone Developer"
+            # https://stackoverflow.com/questions/40664125/cmake-and-code-signing-in-xcode-8-for-ios-projects
+            DEVELOPMENT_TEAM "UL9WJVVZ42"
+        )
     else ()
+        ADD_DEFINITIONS(-DLUA_USE_MACOSX) #osx platform emmylua debugger must have this option or can not load cpath
         set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD_64_BIT)")
         add_library(xlua MODULE
             ${LUA_CORE}
@@ -229,10 +284,20 @@ if (APPLE)
             ${LUA_SOCKET}
             ${XLUA_CORE}
             ${THIRDPART_SRC}
+            ${P7ZIP_SRCS}
         )
         set_target_properties ( xlua PROPERTIES BUNDLE TRUE )
         #set_target_properties ( xlua PROPERTIES FRAMEWORK TRUE )
         #set_target_properties ( xlua PROPERTIES MACOSX_RPATH TRUE )
+
+        find_library(ObjC objc)
+        find_library(CoreFoundation CoreFoundation)
+        find_library(IOKit IOKit)
+        target_link_libraries(xlua 
+            ${CoreFoundation} 
+            ${IOKit} 
+            ${ObjC}
+        )
     endif ()
 elseif ("${CMAKE_SYSTEM_NAME}" STREQUAL "Switch")
     add_library(xlua STATIC
@@ -240,6 +305,7 @@ elseif ("${CMAKE_SYSTEM_NAME}" STREQUAL "Switch")
         ${LUA_LIB}
         ${XLUA_CORE}
         ${THIRDPART_SRC}
+        ${P7ZIP_SRCS}
     )
     target_compile_options(xlua PRIVATE -m64 -mcpu=cortex-a57+fp+simd+crypto+crc -fno-common -fno-short-enums -ffunction-sections -fdata-sections -fPIC -fms-extensions)
 else ( )
@@ -249,6 +315,7 @@ else ( )
         ${LUA_SOCKET}
         ${XLUA_CORE}
         ${THIRDPART_SRC}
+        ${P7ZIP_SRCS}
     )
 endif ( )
 

@@ -31,9 +31,14 @@
 # Standard settings
 set (CMAKE_SYSTEM_NAME Darwin)
 set (CMAKE_SYSTEM_VERSION 1)
-set (UNIX True)
-set (APPLE True)
-set (IOS True)
+set (UNIX TRUE)
+set (APPLE TRUE)
+set (IOS TRUE)
+
+set(CMAKE_C_COMPILER "clang")
+set(CMAKE_CXX_COMPILER "clang++")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fembed-bitcode")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fembed-bitcode")
 
 # Required as of cmake 2.8.10
 set (CMAKE_OSX_DEPLOYMENT_TARGET "" CACHE STRING "Force unset of the deployment target for iOS" FORCE)
