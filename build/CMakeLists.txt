@@ -57,6 +57,10 @@ macro(source_group_by_dir proj_dir source_files)
     endif(MSVC OR APPLE)
 endmacro(source_group_by_dir)
 
+#begin lsqlite3
+add_subdirectory(lsqlite3)
+#end lsqlite3
+
 #begin lpeg
 set ( LPEG_SRC
     lpeg/lpcap.c
@@ -240,29 +244,6 @@ source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LUA_LIB)
 source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} XLUA_CORE)
 
 if (APPLE)
-
-    # #begin NSLUA
-    # include_directories(
-    #     ${CMAKE_SOURCE_DIR}
-    #     nslua
-    #     ${CMAKE_CURRENT_BINARY_DIR}
-    #     ${THIRDPART_INC}
-    # )
-    # file(GLOB_RECURSE NSLUA_SRC
-    #     nslua/*.h
-    #     nslua/*.m
-    # )
-    # set_property(
-    #     SOURCE ${NSLUA_SRC}
-    #     APPEND
-    #     PROPERTY COMPILE_DEFINITIONS
-    #     LUA_LIB
-    # )
-    # list(APPEND THIRDPART_INC  nslua)
-    # set (THIRDPART_SRC ${THIRDPART_SRC} ${NSLUA_SRC})
-    # source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} NSLUA_SRC)
-    # #end NSLUA
-
     set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD)")
     if (IOS)
         add_library(xlua SHARED
@@ -285,19 +266,19 @@ if (APPLE)
         # )
         # set_xcode_property(xlua DEVELOPMENT_TEAM "UL9WJVVZ42" "all")
         set_target_properties(xlua PROPERTIES
-            SUFFIX .so
-            # # FRAMEWORK begin
-            # FRAMEWORK TRUE
-            # FRAMEWORK_VERSION C
-            # MACOSX_FRAMEWORK_IDENTIFIER com.cmake.xlua
-            # MACOSX_FRAMEWORK_INFO_PLIST ../Info.plist
-            # PUBLIC_HEADER xlua.h
-            # # FRAMEWORK end
+            # SUFFIX .so
+            # FRAMEWORK begin
+            FRAMEWORK TRUE
+            FRAMEWORK_VERSION C
+            MACOSX_FRAMEWORK_IDENTIFIER com.cmake.xlua
+            MACOSX_FRAMEWORK_INFO_PLIST ../Info.plist
+            PUBLIC_HEADER xlua.h
+            # FRAMEWORK end
             IPHONEOS_DEPLOYMENT_TARGET "8.0"
             DYLIB_INSTALL_NAME_BASE "@rpath"
-            XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "iPhone Developer"
-            # # https://stackoverflow.com/questions/40664125/cmake-and-code-signing-in-xcode-8-for-ios-projects
-            DEVELOPMENT_TEAM "D2JNH2GMKP"
+            XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Apple Development: navy cool (海军 冷)"
+            # https://stackoverflow.com/questions/40664125/cmake-and-code-signing-in-xcode-8-for-ios-projects
+            DEVELOPMENT_TEAM "3SZSPFHS9S"
         )
     else () # osx
         ADD_DEFINITIONS(-DLUA_USE_MACOSX) #osx platform emmylua debugger must have this option or can not load cpath
@@ -313,32 +294,7 @@ if (APPLE)
         set_target_properties ( xlua PROPERTIES BUNDLE TRUE )
         #set_target_properties ( xlua PROPERTIES FRAMEWORK TRUE )
         #set_target_properties ( xlua PROPERTIES MACOSX_RPATH TRUE )
-
-        # find_library(ObjC objc)
-        # find_library(CoreFoundation CoreFoundation)
-        # find_library(IOKit IOKit)
-        # target_link_libraries(xlua 
-        #     ${CoreFoundation} 
-        #     ${IOKit} 
-        #     ${ObjC}
-        # )
     endif ()
-
-        find_library(ObjC objc)
-        find_library(CoreFoundation CoreFoundation)
-        find_library(IOKit IOKit)
-        find_library(UIKit UIKit)
-        find_library(CoreImage CoreImage)
-        find_library(CoreGraphics CoreGraphics)
-        target_link_libraries(xlua 
-            ${CoreFoundation} 
-            ${IOKit}
-            ${UIKit}
-            ${ObjC}
-            ${CoreImage}
-            ${CoreGraphics}
-        )
-
 elseif ("${CMAKE_SYSTEM_NAME}" STREQUAL "Switch")
     add_library(xlua STATIC
         ${LUA_CORE}
