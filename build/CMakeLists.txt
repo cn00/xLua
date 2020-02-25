@@ -57,9 +57,9 @@ macro(source_group_by_dir proj_dir source_files)
     endif(MSVC OR APPLE)
 endmacro(source_group_by_dir)
 
-#begin lsqlite3
-add_subdirectory(lsqlite3)
-#end lsqlite3
+# #begin lsqlite3
+# add_subdirectory(lsqlite3)
+# #end lsqlite3
 
 #begin lpeg
 set ( LPEG_SRC
@@ -128,7 +128,6 @@ source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LFB_SRC)
 #end LFB
 
 #begin P7ZIP
-
 include_directories(
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -151,12 +150,34 @@ set_property(
     LUA_LIB
 )
 list(APPEND THIRDPART_INC  p7zip)
-set (THIRDPART_SRC ${THIRDPART_SRC} ${P7ZIP_SRC})
+# set (THIRDPART_SRC ${THIRDPART_SRC} ${P7ZIP_SRC})
 source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} P7ZIP_SRC)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -DNDEBUG -D_REENTRANT -DENV_UNIX")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBREAK_HANDLER -DUNICODE -D_UNICODE -DUNIX_USE_WIN_FILE -fPIC")
-
 #end P7ZIP
+
+
+#begin luasqlite
+include_directories(
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${THIRDPART_INC}
+    lsqlite3
+)
+file(GLOB_RECURSE LSQLITE_SRC
+    lsqlite3/*.h
+    lsqlite3/*.c
+)
+set_property(
+    SOURCE ${LSQLITE_SRC}
+    APPEND
+    PROPERTY COMPILE_DEFINITIONS
+    LUA_LIB
+)
+list(APPEND THIRDPART_INC  lsqlite3)
+# set (THIRDPART_SRC ${THIRDPART_SRC} ${LSQLITE_SRC})
+source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LSQLITE_SRC)
+#end luasqlite
 
 set(LUA_SRC_PATH lua-5.3.5/src)
 set(LUAJIT_SRC_PATH luajit-2.1.0b3/src)
@@ -245,31 +266,35 @@ source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} XLUA_CORE)
 
 if (APPLE)
     set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD)")
+    # xlua
+    add_library(xlua SHARED
+        ${LUA_CORE}
+        ${LUA_LIB}
+        ${LUA_SOCKET}
+        ${XLUA_CORE}
+        ${THIRDPART_SRC}
+    )
+    # set_target_properties ( xlua PROPERTIES BUNDLE TRUE )
+
+    # p7zip
+    add_library(p7zip SHARED ${P7ZIP_SRC})
+    target_link_libraries(p7zip xlua)
+
+    # lsqlite3
+    add_library(lsqlite3 SHARED ${LSQLITE_SRC})
+    target_link_libraries(lsqlite3 xlua)
+
+
     if (IOS)
-        add_library(xlua SHARED
-            # m
-            ${LUA_CORE}
-            ${LUA_LIB}
-            ${LUA_SOCKET}
-            ${XLUA_CORE}
-            ${THIRDPART_SRC}
-            ${P7ZIP_SRCS}
-        )
-    	set_xcode_property (xlua IPHONEOS_DEPLOYMENT_TARGET "8.0" "all")
-        # add_library(xlua_static STATIC
-        #     ${LUA_CORE}
-        #     ${LUA_LIB}
-        #     ${LUA_SOCKET}
-        #     ${XLUA_CORE}
-        #     ${THIRDPART_SRC}
-        #     ${P7ZIP_SRCS}
-        # )
         # set_xcode_property(xlua DEVELOPMENT_TEAM "UL9WJVVZ42" "all")
+    	set_xcode_property (xlua IPHONEOS_DEPLOYMENT_TARGET "8.0" "all")
+        set(CMAKE_IOS_ARCHITECTURES "arm64")
+        # xlua
         set_target_properties(xlua PROPERTIES
             # SUFFIX .so
             # FRAMEWORK begin
             FRAMEWORK TRUE
-            FRAMEWORK_VERSION C
+            FRAMEWORK_VERSION A
             MACOSX_FRAMEWORK_IDENTIFIER com.cmake.xlua
             MACOSX_FRAMEWORK_INFO_PLIST ../Info.plist
             PUBLIC_HEADER xlua.h
@@ -280,28 +305,60 @@ if (APPLE)
             # https://stackoverflow.com/questions/40664125/cmake-and-code-signing-in-xcode-8-for-ios-projects
             DEVELOPMENT_TEAM "3SZSPFHS9S"
         )
-    else () # osx
+
+        # p7zip
+        set_target_properties(p7zip PROPERTIES
+            # SUFFIX .so
+            # FRAMEWORK begin
+            FRAMEWORK TRUE
+            FRAMEWORK_VERSION A
+            MACOSX_FRAMEWORK_IDENTIFIER com.cmake.p7zip
+            MACOSX_FRAMEWORK_INFO_PLIST ../Info.plist
+            PUBLIC_HEADER p7zip.h
+            # FRAMEWORK end
+            IPHONEOS_DEPLOYMENT_TARGET "8.0"
+            DYLIB_INSTALL_NAME_BASE "@rpath"
+            XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Apple Development: navy cool (海军 冷)"
+            # https://stackoverflow.com/questions/40664125/cmake-and-code-signing-in-xcode-8-for-ios-projects
+            DEVELOPMENT_TEAM "3SZSPFHS9S"
+        )
+
+
+        # lsqlite3
+        set_target_properties(lsqlite3 PROPERTIES
+            # SUFFIX .so
+            # FRAMEWORK begin
+            FRAMEWORK TRUE
+            FRAMEWORK_VERSION A
+            MACOSX_FRAMEWORK_IDENTIFIER com.cmake.lsqlite3
+            MACOSX_FRAMEWORK_INFO_PLIST ../Info.plist
+            PUBLIC_HEADER lsqlite3.h
+            # FRAMEWORK end
+            IPHONEOS_DEPLOYMENT_TARGET "8.0"
+            DYLIB_INSTALL_NAME_BASE "@rpath"
+            XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Apple Development: navy cool (海军 冷)"
+            # https://stackoverflow.com/questions/40664125/cmake-and-code-signing-in-xcode-8-for-ios-projects
+            DEVELOPMENT_TEAM "3SZSPFHS9S"
+        )
+   else () # osx
         ADD_DEFINITIONS(-DLUA_USE_MACOSX) #osx platform emmylua debugger must have this option or can not load cpath
         set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD_64_BIT)")
-        add_library(xlua MODULE
-            ${LUA_CORE}
-            ${LUA_LIB}
-            ${LUA_SOCKET}
-            ${XLUA_CORE}
-            ${THIRDPART_SRC}
-            ${P7ZIP_SRCS}
-        )
-        set_target_properties ( xlua PROPERTIES BUNDLE TRUE )
-        #set_target_properties ( xlua PROPERTIES FRAMEWORK TRUE )
-        #set_target_properties ( xlua PROPERTIES MACOSX_RPATH TRUE )
+
+        set_target_properties (xlua PROPERTIES SUFFIX .so)
+        set_target_properties (p7zip PROPERTIES SUFFIX .so)
+        set_target_properties (lsqlite3 PROPERTIES SUFFIX .so)
+
     endif ()
+
+
+
 elseif ("${CMAKE_SYSTEM_NAME}" STREQUAL "Switch")
     add_library(xlua STATIC
         ${LUA_CORE}
         ${LUA_LIB}
         ${XLUA_CORE}
         ${THIRDPART_SRC}
-        ${P7ZIP_SRCS}
+        ${P7ZIP_SRC}
     )
     target_compile_options(xlua PRIVATE -m64 -mcpu=cortex-a57+fp+simd+crypto+crc -fno-common -fno-short-enums -ffunction-sections -fdata-sections -fPIC -fms-extensions)
 else ( )
@@ -311,7 +368,7 @@ else ( )
         ${LUA_SOCKET}
         ${XLUA_CORE}
         ${THIRDPART_SRC}
-        ${P7ZIP_SRCS}
+        ${P7ZIP_SRC}
     )
 endif ( )
 
