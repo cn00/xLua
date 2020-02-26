@@ -33,11 +33,13 @@ namespace XLua.LuaDLL
 
     public partial class Lua
 	{
-#if (UNITY_IPHONE || UNITY_WEBGL || UNITY_SWITCH) && !UNITY_EDITOR
+		#if (UNITY_IPHONE || UNITY_WEBGL || UNITY_SWITCH) && !UNITY_EDITOR_OSX
         public const string LUADLL = "xlua";
-#else
-        public const string LUADLL = "xlua";
-#endif
+		#else // UNITY_EDITOR_OSX
+		public const string LUADLL = "Assets/XLua/Plugins/OSX/libxlua.so"; // ok
+		// public const string LUADLL = "Assets/XLua/Plugins/OSX/xlua.framework/xlua"; // ok
+		// public const string LUADLL = "Assets/XLua/Plugins/OSX/xlua.dylib"; // ok
+		#endif
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr lua_tothread(IntPtr L, int index);
