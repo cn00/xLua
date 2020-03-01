@@ -264,27 +264,25 @@ source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LUA_CORE)
 source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LUA_LIB)
 source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} XLUA_CORE)
 
+# xlua
+add_library(xlua SHARED
+    ${LUA_CORE}
+    ${LUA_LIB}
+    ${LUA_SOCKET}
+    ${XLUA_CORE}
+    ${THIRDPART_SRC}
+)
+# set_target_properties ( xlua PROPERTIES BUNDLE TRUE )
+
+# p7zip
+add_library(p7zip SHARED ${P7ZIP_SRC})
+target_link_libraries(p7zip xlua)
+
+# lsqlite3
+add_library(lsqlite3 SHARED ${LSQLITE_SRC})
+target_link_libraries(lsqlite3 xlua)
 if (APPLE)
     set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD)")
-    # xlua
-    add_library(xlua SHARED
-        ${LUA_CORE}
-        ${LUA_LIB}
-        ${LUA_SOCKET}
-        ${XLUA_CORE}
-        ${THIRDPART_SRC}
-    )
-    # set_target_properties ( xlua PROPERTIES BUNDLE TRUE )
-
-    # p7zip
-    add_library(p7zip SHARED ${P7ZIP_SRC})
-    target_link_libraries(p7zip xlua)
-
-    # lsqlite3
-    add_library(lsqlite3 SHARED ${LSQLITE_SRC})
-    target_link_libraries(lsqlite3 xlua)
-
-
     if (IOS)
         # set_xcode_property(xlua DEVELOPMENT_TEAM "UL9WJVVZ42" "all")
     	set_xcode_property (xlua IPHONEOS_DEPLOYMENT_TARGET "8.0" "all")
@@ -361,15 +359,6 @@ elseif ("${CMAKE_SYSTEM_NAME}" STREQUAL "Switch")
         ${P7ZIP_SRC}
     )
     target_compile_options(xlua PRIVATE -m64 -mcpu=cortex-a57+fp+simd+crypto+crc -fno-common -fno-short-enums -ffunction-sections -fdata-sections -fPIC -fms-extensions)
-else ( )
-    add_library(xlua SHARED
-        ${LUA_CORE}
-        ${LUA_LIB}
-        ${LUA_SOCKET}
-        ${XLUA_CORE}
-        ${THIRDPART_SRC}
-        ${P7ZIP_SRC}
-    )
 endif ( )
 
 if ( WIN32 AND NOT CYGWIN )
