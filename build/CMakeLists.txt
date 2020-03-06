@@ -271,83 +271,88 @@ add_library(xlua SHARED
     ${LUA_SOCKET}
     ${XLUA_CORE}
     ${THIRDPART_SRC}
+    ${P7ZIP_SRC}
+    ${LSQLITE_SRC}
 )
-# set_target_properties ( xlua PROPERTIES BUNDLE TRUE )
+set_target_properties(xlua PROPERTIES MACOSX_FRAMEWORK_INFO_PLIST ../Info-xlua.plist)
 
-# p7zip
-add_library(p7zip SHARED ${P7ZIP_SRC})
-target_link_libraries(p7zip xlua)
+# # p7zip
+# add_library(p7zip SHARED ${P7ZIP_SRC})
+# target_link_libraries(p7zip xlua)
+# set_target_properties(p7zip PROPERTIES MACOSX_FRAMEWORK_INFO_PLIST ../Info-p7zip.plist)
 
-# lsqlite3
-add_library(lsqlite3 SHARED ${LSQLITE_SRC})
-target_link_libraries(lsqlite3 xlua)
+# # lsqlite3
+# add_library(lsqlite3 SHARED ${LSQLITE_SRC})
+# target_link_libraries(lsqlite3 xlua)
+# set_target_properties(lsqlite3 PROPERTIES MACOSX_FRAMEWORK_INFO_PLIST ../Info-lsqlite3.plist)
+
 if (APPLE)
-    set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD)")
     if (IOS)
-        # set_xcode_property(xlua DEVELOPMENT_TEAM "UL9WJVVZ42" "all")
-    	set_xcode_property (xlua IPHONEOS_DEPLOYMENT_TARGET "8.0" "all")
-        set(CMAKE_IOS_ARCHITECTURES "arm64")
-        # xlua
-        set_target_properties(xlua PROPERTIES
-            # SUFFIX .so
-            # FRAMEWORK begin
-            FRAMEWORK TRUE
-            FRAMEWORK_VERSION A
-            MACOSX_FRAMEWORK_IDENTIFIER com.cmake.xlua
-            MACOSX_FRAMEWORK_INFO_PLIST ../Info.plist
-            PUBLIC_HEADER xlua.h
-            # FRAMEWORK end
-            IPHONEOS_DEPLOYMENT_TARGET "8.0"
-            DYLIB_INSTALL_NAME_BASE "@rpath"
-            XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Apple Development: navy cool (海军 冷)"
-            # https://stackoverflow.com/questions/40664125/cmake-and-code-signing-in-xcode-8-for-ios-projects
-            DEVELOPMENT_TEAM "3SZSPFHS9S"
-        )
+        # # set_xcode_property(xlua DEVELOPMENT_TEAM "UL9WJVVZ42" "all")
+    	# set_xcode_property (xlua IPHONEOS_DEPLOYMENT_TARGET "8.0" "all")
+        # set(CMAKE_IOS_ARCHITECTURES "arm64")
+        # # xlua
+        # # set_target_properties ( xlua PROPERTIES BUNDLE TRUE )
+        # set_target_properties(xlua PROPERTIES
+        #     # SUFFIX .so
+        #     # FRAMEWORK begin
+        #     FRAMEWORK TRUE
+        #     FRAMEWORK_VERSION A
+        #     MACOSX_FRAMEWORK_IDENTIFIER com.cn.xlua
+        #     MACOSX_FRAMEWORK_INFO_PLIST ../Info-xlua.plist
+        #     PUBLIC_HEADER xlua.h
+        #     # FRAMEWORK end
+        #     IPHONEOS_DEPLOYMENT_TARGET "8.0"
+        #     DYLIB_INSTALL_NAME_BASE "@rpath"
+        #     XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Apple Development: navy cool (海军 冷)"
+        #     # https://stackoverflow.com/questions/40664125/cmake-and-code-signing-in-xcode-8-for-ios-projects
+        #     DEVELOPMENT_TEAM "3SZSPFHS9S"
+        # )
 
-        # p7zip
-        set_target_properties(p7zip PROPERTIES
-            # SUFFIX .so
-            # FRAMEWORK begin
-            FRAMEWORK TRUE
-            FRAMEWORK_VERSION A
-            MACOSX_FRAMEWORK_IDENTIFIER com.cmake.p7zip
-            MACOSX_FRAMEWORK_INFO_PLIST ../Info.plist
-            PUBLIC_HEADER p7zip.h
-            # FRAMEWORK end
-            IPHONEOS_DEPLOYMENT_TARGET "8.0"
-            DYLIB_INSTALL_NAME_BASE "@rpath"
-            XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Apple Development: navy cool (海军 冷)"
-            # https://stackoverflow.com/questions/40664125/cmake-and-code-signing-in-xcode-8-for-ios-projects
-            DEVELOPMENT_TEAM "3SZSPFHS9S"
-        )
+        # # p7zip
+        # set_target_properties(p7zip PROPERTIES
+        #     # SUFFIX .so
+        #     # FRAMEWORK begin
+        #     FRAMEWORK TRUE
+        #     FRAMEWORK_VERSION A
+        #     MACOSX_FRAMEWORK_IDENTIFIER com.cn.p7zip
+        #     MACOSX_FRAMEWORK_INFO_PLIST ../Info-p7zip.plist
+        #     PUBLIC_HEADER p7zip.h
+        #     # FRAMEWORK end
+        #     IPHONEOS_DEPLOYMENT_TARGET "8.0"
+        #     DYLIB_INSTALL_NAME_BASE "@rpath"
+        #     XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Apple Development: navy cool (海军 冷)"
+        #     # https://stackoverflow.com/questions/40664125/cmake-and-code-signing-in-xcode-8-for-ios-projects
+        #     DEVELOPMENT_TEAM "3SZSPFHS9S"
+        # )
 
 
-        # lsqlite3
-        set_target_properties(lsqlite3 PROPERTIES
-            # SUFFIX .so
-            # FRAMEWORK begin
-            FRAMEWORK TRUE
-            FRAMEWORK_VERSION A
-            MACOSX_FRAMEWORK_IDENTIFIER com.cmake.lsqlite3
-            MACOSX_FRAMEWORK_INFO_PLIST ../Info.plist
-            PUBLIC_HEADER lsqlite3.h
-            # FRAMEWORK end
-            IPHONEOS_DEPLOYMENT_TARGET "8.0"
-            DYLIB_INSTALL_NAME_BASE "@rpath"
-            XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Apple Development: navy cool (海军 冷)"
-            # https://stackoverflow.com/questions/40664125/cmake-and-code-signing-in-xcode-8-for-ios-projects
-            DEVELOPMENT_TEAM "3SZSPFHS9S"
-        )
+        # # lsqlite3
+        # set_target_properties(lsqlite3 PROPERTIES
+        #     # SUFFIX .so
+        #     # FRAMEWORK begin
+        #     FRAMEWORK TRUE
+        #     FRAMEWORK_VERSION A
+        #     MACOSX_FRAMEWORK_IDENTIFIER com.cn.lsqlite3
+        #     MACOSX_FRAMEWORK_INFO_PLIST ../Info-lsqlite3.plist
+        #     PUBLIC_HEADER lsqlite3.h
+        #     # FRAMEWORK end
+        #     IPHONEOS_DEPLOYMENT_TARGET "8.0"
+        #     DYLIB_INSTALL_NAME_BASE "@rpath"
+        #     XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Apple Development: navy cool (海军 冷)"
+        #     # https://stackoverflow.com/questions/40664125/cmake-and-code-signing-in-xcode-8-for-ios-projects
+        #     DEVELOPMENT_TEAM "3SZSPFHS9S"
+        # )
    else () # osx
         ADD_DEFINITIONS(-DLUA_USE_MACOSX) #osx platform emmylua debugger must have this option or can not load cpath
         set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD_64_BIT)")
+        # set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD)")
 
-        set_target_properties (xlua PROPERTIES SUFFIX .so)
-        set_target_properties (p7zip PROPERTIES SUFFIX .so)
-        set_target_properties (lsqlite3 PROPERTIES SUFFIX .so)
+        # set_target_properties (xlua PROPERTIES SUFFIX .so)
+        # set_target_properties (p7zip PROPERTIES SUFFIX .so)
+        # set_target_properties (lsqlite3 PROPERTIES SUFFIX .so)
 
     endif ()
-
 
 
 elseif ("${CMAKE_SYSTEM_NAME}" STREQUAL "Switch")
