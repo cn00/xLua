@@ -4,9 +4,6 @@
 [submodule "build/p7zip/p7zip"]
 	path = build/p7zip/p7zip
 	url = git@github.com:cn00/7z.git
-[submodule "build/luabit"]
-	path = build/luabit
-	url = git@github.com:LuaDist/luabitop.git
 [submodule "build/libexpat"]
 	path = build/libexpat
 	url = git@github.com:libexpat/libexpat.git
