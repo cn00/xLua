@@ -61,6 +61,8 @@ endmacro(source_group_by_dir)
 # add_subdirectory(lsqlite3)
 # #end lsqlite3
 
+add_subdirectory(libexpat/expat)
+
 #begin lpeg
 set ( LPEG_SRC
     lpeg/lpcap.c
@@ -81,22 +83,26 @@ source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LPEG_SRC)
 #end lpeg
 
 #begin FFI
-if (NOT USING_LUAJIT)
-    set (FFI_SRC 
-        ffi/parser.c 
-        ffi/ctype.c 
-        ffi/call.c
-        ffi/ffi.c
-    )
-	set_property(
-		SOURCE ${FFI_SRC}
-		APPEND
-		PROPERTY COMPILE_DEFINITIONS
-		LUA_LIB
-	)
-	list(APPEND THIRDPART_INC  ffi)
-	set (THIRDPART_SRC ${THIRDPART_SRC} ${FFI_SRC})
-endif ()
+include_directories(
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${THIRDPART_INC}
+    ffi
+)
+set (FFI_SRC 
+    ffi/parser.c 
+    ffi/ctype.c 
+    ffi/call.c
+    ffi/ffi.c
+)
+set_property(
+    SOURCE ${FFI_SRC}
+    APPEND
+    PROPERTY COMPILE_DEFINITIONS
+    LUA_LIB
+)
+list(APPEND THIRDPART_INC  ffi)
+set (THIRDPART_SRC ${THIRDPART_SRC} ${FFI_SRC})
 source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} FFI_SRC)
 #end FFI
 
@@ -178,6 +184,29 @@ list(APPEND THIRDPART_INC  lsqlite3)
 # set (THIRDPART_SRC ${THIRDPART_SRC} ${LSQLITE_SRC})
 source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LSQLITE_SRC)
 #end luasqlite
+
+#begin lxp
+include_directories(
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${THIRDPART_INC}
+    luaexpat/src
+)
+file(GLOB_RECURSE LXP_SRC
+    luaexpat/src/*.h
+    luaexpat/src/*.c
+)
+set_property(
+    SOURCE ${LXP_SRC}
+    APPEND
+    PROPERTY COMPILE_DEFINITIONS
+    LUA_LIB
+)
+list(APPEND THIRDPART_INC  lxp)
+# set (THIRDPART_SRC ${THIRDPART_SRC} ${LSQLITE_SRC})
+source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LXP_SRC)
+#end lxp
+
 
 set(LUA_SRC_PATH lua-5.3.5/src)
 set(LUAJIT_SRC_PATH luajit-2.1.0b3/src)
@@ -273,8 +302,10 @@ add_library(xlua SHARED
     ${THIRDPART_SRC}
     ${P7ZIP_SRC}
     ${LSQLITE_SRC}
+    ${LXP_SRC}
 )
 set_target_properties(xlua PROPERTIES MACOSX_FRAMEWORK_INFO_PLIST ../Info-xlua.plist)
+target_link_libraries(xlua expat)
 
 # # p7zip
 # add_library(p7zip SHARED ${P7ZIP_SRC})

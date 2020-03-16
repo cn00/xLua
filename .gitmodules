@@ -7,3 +7,9 @@
 [submodule "build/luabit"]
 	path = build/luabit
 	url = git@github.com:LuaDist/luabitop.git
+[submodule "build/libexpat"]
+	path = build/libexpat
+	url = git@github.com:libexpat/libexpat.git
+[submodule "build/luaexpat"]
+	path = build/luaexpat
+	url = git@github.com:LuaDist/luaexpat.git
