@@ -184,8 +184,8 @@ endif()
 
 # Default values for configurable variables.
 if(NOT ANDROID_TOOLCHAIN)
-  set(ANDROID_TOOLCHAIN clang)
-elseif(ANDROID_TOOLCHAIN STREQUAL gcc)
+  set(ANDROID_TOOLCHAIN clang++)
+elseif(ANDROID_TOOLCHAIN STREQUAL g++)
   message(FATAL_ERROR "GCC is no longer supported. See "
   "https://android.googlesource.com/platform/ndk/+/master/docs/ClangMigration.md.")
 endif()
@@ -485,11 +485,11 @@ set(ANDROID_HOST_PREBUILTS "${ANDROID_NDK}/prebuilt/${ANDROID_HOST_TAG}")
 set(ANDROID_LLVM_TOOLCHAIN_PREFIX
   "${ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_HOST_TAG}/bin/")
 set(ANDROID_C_COMPILER
-  "${ANDROID_LLVM_TOOLCHAIN_PREFIX}clang${ANDROID_TOOLCHAIN_SUFFIX}")
+  "${ANDROID_LLVM_TOOLCHAIN_PREFIX}clang++${ANDROID_TOOLCHAIN_SUFFIX}")
 set(ANDROID_CXX_COMPILER
   "${ANDROID_LLVM_TOOLCHAIN_PREFIX}clang++${ANDROID_TOOLCHAIN_SUFFIX}")
 set(ANDROID_ASM_COMPILER
-  "${ANDROID_LLVM_TOOLCHAIN_PREFIX}clang${ANDROID_TOOLCHAIN_SUFFIX}")
+  "${ANDROID_LLVM_TOOLCHAIN_PREFIX}clang++${ANDROID_TOOLCHAIN_SUFFIX}")
 # Clang can fail to compile if CMake doesn't correctly supply the target and
 # external toolchain, but to do so, CMake needs to already know that the
 # compiler is clang. Tell CMake that the compiler is really clang, but don't

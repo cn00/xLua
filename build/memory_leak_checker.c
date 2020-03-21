@@ -25,7 +25,8 @@ static int table_size (Table *h, int fast)
 {
 	if (fast)
 	{
-		return (int)sizenode(h) + (int)h->sizearray;
+        unsigned int asize = luaH_realasize(h);
+		return (int)sizenode(h) + asize;
 	}
 	else
 	{
@@ -62,6 +63,11 @@ LUA_API void xlua_report_table_size(lua_State *L, TableSizeReport cb, int fast)
 }
 
 
+/* type tag of a TValue with no variants (bits 0-3) */
+#define ttnov(o)    ttype(o)
+/* 'const' to avoid wrong writings that can mess up field 'next' */
+#define gkey(n)        cast(const TValue*, (&(n)->i_val))
+
 static void report_table(Table *h, ObjectRelationshipReport cb)
 {
 	Node *n, *limit = gnodelast(h);
@@ -71,8 +77,8 @@ static void report_table(Table *h, ObjectRelationshipReport cb)
 	{
 		cb(h, h->metatable, 4, NULL, 0, NULL);
 	}
-	
-    for (i = 0; i < h->sizearray; i++)
+	unsigned int asize = luaH_realasize(h);
+    for (i = 0; i < asize; i++)
 	{
 		const TValue *item = &h->array[i];
 		if (ttistable(item))
@@ -126,7 +132,7 @@ LUA_API void xlua_report_object_relationship(lua_State *L, ObjectRelationshipRep
 			Table *h = gco2t(p);
 			report_table(h, cb);
 		}
-		else if (p->tt == LUA_TLCL)
+		else if (p->tt == LUA_VLCL)
 		{
 			LClosure *cl = gco2lcl(p);
 			lua_lock(L);

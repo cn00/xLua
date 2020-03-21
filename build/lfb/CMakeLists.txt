@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.13)
 project(lfb)
 
 # add_subdirectory(third_party/flatbuffers)
-add_subdirectory(../lua-5.3.4 binary_dir EXCLUDE_FROM_ALL)
+# add_subdirectory(../lua binary_dir EXCLUDE_FROM_ALL)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -L${CMAKE_CURRENT_SOURCE_DIR} -std=gnu++11 -stdlib=libc++ ")
 
@@ -32,7 +32,7 @@ source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} lfb_sources)
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/
   ${CMAKE_CURRENT_SOURCE_DIR}/src
-  ${CMAKE_CURRENT_SOURCE_DIR}/../lua-5.3.4/src
+  ${CMAKE_CURRENT_SOURCE_DIR}/../lua/src
   ${CMAKE_CURRENT_SOURCE_DIR}/src/flatbuffers/include
 )
 

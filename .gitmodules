@@ -10,3 +10,6 @@
 [submodule "build/luaexpat"]
 	path = build/luaexpat
 	url = git@github.com:LuaDist/luaexpat.git
+[submodule "build/lua"]
+	path = build/lua
+	url = git@github.com:cn00/lua.git

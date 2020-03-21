@@ -2388,6 +2388,13 @@ LUALIB_API int luaopen_lsqlite3(lua_State *L) {
 
     /* register (local) sqlite metatable */
     luaL_register(L, "sqlite3", sqlitelib);
+    #if LUA_VERSION_NUM >= 503
+        luaL_newlib(L, sqlitelib);
+        lua_setglobal(L, "sqlite3");
+    #else
+        luaL_register(L, "sqlite3", sqlitelib);
+        lua_pop(L, 1);
+    #endif
 
     {
         int i = 0;

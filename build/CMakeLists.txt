@@ -61,8 +61,6 @@ endmacro(source_group_by_dir)
 # add_subdirectory(lsqlite3)
 # #end lsqlite3
 
-add_subdirectory(libexpat/expat)
-
 #begin lpeg
 set ( LPEG_SRC
     lpeg/lpcap.c
@@ -134,32 +132,33 @@ source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LFB_SRC)
 #end LFB
 
 #begin P7ZIP
-include_directories(
-    ${CMAKE_SOURCE_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${THIRDPART_INC}
-    p7zip/p7zip
-    p7zip/p7zip/CPP
-    p7zip/p7zip/CPP/Common
-    p7zip/p7zip/CPP/myWindows
-    p7zip/p7zip/CPP/include_windows
-)
-file(GLOB_RECURSE P7ZIP_SRC
-    p7zip/p7zip/*.h
-    p7zip/p7zip/*.c
-    p7zip/p7zip/*.cpp
-)
-set_property(
-    SOURCE ${P7ZIP_SRC}
-    APPEND
-    PROPERTY COMPILE_DEFINITIONS
-    LUA_LIB
-)
-list(APPEND THIRDPART_INC  p7zip)
-# set (THIRDPART_SRC ${THIRDPART_SRC} ${P7ZIP_SRC})
-source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} P7ZIP_SRC)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -DNDEBUG -D_REENTRANT -DENV_UNIX")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBREAK_HANDLER -DUNICODE -D_UNICODE -DUNIX_USE_WIN_FILE -fPIC")
+# include_directories(
+#     ${CMAKE_SOURCE_DIR}
+#     ${CMAKE_CURRENT_BINARY_DIR}
+#     ${THIRDPART_INC}
+#     p7zip/p7zip
+#     p7zip/p7zip/CPP
+#     p7zip/p7zip/CPP/Common
+#     p7zip/p7zip/CPP/myWindows
+#     p7zip/p7zip/CPP/include_windows
+# )
+# file(GLOB_RECURSE P7ZIP_SRC
+#     p7zip/p7zip/*.h
+#     p7zip/p7zip/*.c
+#     p7zip/p7zip/*.cpp
+# )
+# set_property(
+#     SOURCE ${P7ZIP_SRC}
+#     APPEND
+#     PROPERTY COMPILE_DEFINITIONS
+#     LUA_LIB
+# )
+# list(APPEND THIRDPART_INC  p7zip)
+# # set (THIRDPART_SRC ${THIRDPART_SRC} ${P7ZIP_SRC})
+# source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} P7ZIP_SRC)
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -DNDEBUG -D_REENTRANT -DENV_UNIX")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBREAK_HANDLER -DUNICODE -D_UNICODE -DUNIX_USE_WIN_FILE -fPIC")
+add_subdirectory(p7zip)
 #end P7ZIP
 
 
@@ -186,29 +185,31 @@ source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LSQLITE_SRC)
 #end luasqlite
 
 #begin lxp
-include_directories(
-    ${CMAKE_SOURCE_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${THIRDPART_INC}
-    luaexpat/src
-)
-file(GLOB_RECURSE LXP_SRC
-    luaexpat/src/*.h
-    luaexpat/src/*.c
-)
-set_property(
-    SOURCE ${LXP_SRC}
-    APPEND
-    PROPERTY COMPILE_DEFINITIONS
-    LUA_LIB
-)
-list(APPEND THIRDPART_INC  lxp)
-# set (THIRDPART_SRC ${THIRDPART_SRC} ${LSQLITE_SRC})
-source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LXP_SRC)
+# include_directories(
+#     ${CMAKE_SOURCE_DIR}
+#     ${CMAKE_CURRENT_BINARY_DIR}
+#     ${THIRDPART_INC}
+#     luaexpat/src
+# )
+# file(GLOB_RECURSE LXP_SRC
+#     luaexpat/src/*.h
+#     luaexpat/src/*.c
+# )
+# set_property(
+#     SOURCE ${LXP_SRC}
+#     APPEND
+#     PROPERTY COMPILE_DEFINITIONS
+#     LUA_LIB
+# )
+# list(APPEND THIRDPART_INC  lxp)
+# # set (THIRDPART_SRC ${THIRDPART_SRC} ${LSQLITE_SRC})
+# source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LXP_SRC)
+add_subdirectory(luaexpat)
+add_subdirectory(libexpat/expat)
 #end lxp
 
 
-set(LUA_SRC_PATH lua-5.3.5/src)
+set(LUA_SRC_PATH lua/src)
 set(LUAJIT_SRC_PATH luajit-2.1.0b3/src)
 
 if (USING_LUAJIT)
@@ -250,12 +251,13 @@ else ()
 		${THIRDPART_INC}
 	)
 
-	set ( LUA_CORE ${LUA_SRC_PATH}/lapi.c ${LUA_SRC_PATH}/lcode.c ${LUA_SRC_PATH}/lctype.c ${LUA_SRC_PATH}/ldebug.c ${LUA_SRC_PATH}/ldo.c ${LUA_SRC_PATH}/ldump.c
-	  ${LUA_SRC_PATH}/lfunc.c ${LUA_SRC_PATH}/lgc.c ${LUA_SRC_PATH}/llex.c ${LUA_SRC_PATH}/lmem.c ${LUA_SRC_PATH}/lobject.c ${LUA_SRC_PATH}/lopcodes.c ${LUA_SRC_PATH}/lparser.c
-	  ${LUA_SRC_PATH}/lstate.c ${LUA_SRC_PATH}/lstring.c ${LUA_SRC_PATH}/ltable.c ${LUA_SRC_PATH}/ltm.c ${LUA_SRC_PATH}/lundump.c ${LUA_SRC_PATH}/lvm.c ${LUA_SRC_PATH}/lzio.c )
-	set ( LUA_LIB ${LUA_SRC_PATH}/lauxlib.c ${LUA_SRC_PATH}/lbaselib.c ${LUA_SRC_PATH}/lbitlib.c ${LUA_SRC_PATH}/lcorolib.c ${LUA_SRC_PATH}/ldblib.c
-	  ${LUA_SRC_PATH}/liolib.c ${LUA_SRC_PATH}/lmathlib.c ${LUA_SRC_PATH}/loslib.c ${LUA_SRC_PATH}/lstrlib.c ${LUA_SRC_PATH}/ltablib.c ${LUA_SRC_PATH}/linit.c
-	  ${LUA_SRC_PATH}/lutf8lib.c ${LUA_SRC_PATH}/loadlib.c )
+	# set ( LUA_CORE ${LUA_SRC_PATH}/lapi.c ${LUA_SRC_PATH}/lcode.c ${LUA_SRC_PATH}/lctype.c ${LUA_SRC_PATH}/ldebug.c ${LUA_SRC_PATH}/ldo.c ${LUA_SRC_PATH}/ldump.c
+	#   ${LUA_SRC_PATH}/lfunc.c ${LUA_SRC_PATH}/lgc.c ${LUA_SRC_PATH}/llex.c ${LUA_SRC_PATH}/lmem.c ${LUA_SRC_PATH}/lobject.c ${LUA_SRC_PATH}/lopcodes.c ${LUA_SRC_PATH}/lparser.c
+	#   ${LUA_SRC_PATH}/lstate.c ${LUA_SRC_PATH}/lstring.c ${LUA_SRC_PATH}/ltable.c ${LUA_SRC_PATH}/ltm.c ${LUA_SRC_PATH}/lundump.c ${LUA_SRC_PATH}/lvm.c ${LUA_SRC_PATH}/lzio.c )
+	# set ( LUA_LIB ${LUA_SRC_PATH}/lauxlib.c ${LUA_SRC_PATH}/lbaselib.c ${LUA_SRC_PATH}/lbitlib.c ${LUA_SRC_PATH}/lcorolib.c ${LUA_SRC_PATH}/ldblib.c
+	#   ${LUA_SRC_PATH}/liolib.c ${LUA_SRC_PATH}/lmathlib.c ${LUA_SRC_PATH}/loslib.c ${LUA_SRC_PATH}/lstrlib.c ${LUA_SRC_PATH}/ltablib.c ${LUA_SRC_PATH}/linit.c
+    #   ${LUA_SRC_PATH}/lutf8lib.c ${LUA_SRC_PATH}/loadlib.c )
+    add_subdirectory(lua)
 endif ()
 
 set ( LUA_SOCKET
@@ -305,7 +307,10 @@ add_library(xlua SHARED
     ${LXP_SRC}
 )
 set_target_properties(xlua PROPERTIES MACOSX_FRAMEWORK_INFO_PLIST ../Info-xlua.plist)
+
+target_link_libraries(xlua lua_static)
 target_link_libraries(xlua expat)
+target_link_libraries(xlua p7zip)
 
 # # p7zip
 # add_library(p7zip SHARED ${P7ZIP_SRC})
