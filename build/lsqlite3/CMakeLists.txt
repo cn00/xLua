@@ -34,27 +34,28 @@ file(GLOB_RECURSE SRCS
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/
+    ${CMAKE_CURRENT_SOURCE_DIR}/../lua/src
 )
 
 add_library(lsqlite3 SHARED ${SRCS})
 source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} SRCS)
 
-set_target_properties(lsqlite3 PROPERTIES
-    # SUFFIX .so
-    # FRAMEWORK begin
-    FRAMEWORK TRUE
-    FRAMEWORK_VERSION C
-    MACOSX_FRAMEWORK_IDENTIFIER com.cmake.sqlite3
-    MACOSX_FRAMEWORK_INFO_PLIST ../Info.plist
-    PUBLIC_HEADER sqlite3.h
-    # FRAMEWORK end
-    IPHONEOS_DEPLOYMENT_TARGET "8.0"
-    DYLIB_INSTALL_NAME_BASE "@rpath"
-    XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Apple Development: navy cool (海军 冷)"
-    # https://stackoverflow.com/questions/40664125/cmake-and-code-signing-in-xcode-8-for-ios-projects
-    DEVELOPMENT_TEAM "3SZSPFHS9S"
-)
+# set_target_properties(lsqlite3 PROPERTIES
+#     # SUFFIX .so
+#     # FRAMEWORK begin
+#     FRAMEWORK TRUE
+#     FRAMEWORK_VERSION C
+#     MACOSX_FRAMEWORK_IDENTIFIER com.cmake.sqlite3
+#     MACOSX_FRAMEWORK_INFO_PLIST ../Info.plist
+#     PUBLIC_HEADER sqlite3.h
+#     # FRAMEWORK end
+#     IPHONEOS_DEPLOYMENT_TARGET "8.0"
+#     DYLIB_INSTALL_NAME_BASE "@rpath"
+#     XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Apple Development: navy cool (海军 冷)"
+#     # https://stackoverflow.com/questions/40664125/cmake-and-code-signing-in-xcode-8-for-ios-projects
+#     DEVELOPMENT_TEAM "3SZSPFHS9S"
+# )
 
 target_link_libraries(lsqlite3
-    xlua
+    liblua
 )

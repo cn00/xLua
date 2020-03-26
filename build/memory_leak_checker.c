@@ -117,7 +117,7 @@ static void report_table(Table *h, ObjectRelationshipReport cb)
     }
 }
 
-
+#define LUA_TLCL LUA_VLCL
 LUA_API void xlua_report_object_relationship(lua_State *L, ObjectRelationshipReport cb)
 {
 	GCObject *p = G(L)->allgc;
@@ -132,7 +132,7 @@ LUA_API void xlua_report_object_relationship(lua_State *L, ObjectRelationshipRep
 			Table *h = gco2t(p);
 			report_table(h, cb);
 		}
-		else if (p->tt == LUA_VLCL)
+		else if (p->tt == LUA_TLCL)
 		{
 			LClosure *cl = gco2lcl(p);
 			lua_lock(L);

@@ -25,7 +25,9 @@ if(ANDROID)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBREAK_HANDLER -DUNICODE -D_UNICODE -DUNIX_USE_WIN_FILE -fPIC")
 endif(ANDROID)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DLUAINTF_LINK_LUA_COMPILED_IN_CXX=0")
+# set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -x c++")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DLUAINTF_LINK_LUA_COMPILED_IN_CXX=1")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DLUAINTF_LINK_LUA_COMPILED_IN_CXX=0 -DLUAINTF_HEADERS_ONLY=1 -DENV_HAVE_WCTYPE_H=1")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -lm")
 
 option ( UINT_ESPECIALLY "using custom ulong" OFF )
@@ -56,10 +58,6 @@ macro(source_group_by_dir proj_dir source_files)
         endforeach(sgbd_file)
     endif(MSVC OR APPLE)
 endmacro(source_group_by_dir)
-
-# #begin lsqlite3
-# add_subdirectory(lsqlite3)
-# #end lsqlite3
 
 #begin lpeg
 set ( LPEG_SRC
@@ -158,31 +156,34 @@ source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LFB_SRC)
 # source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} P7ZIP_SRC)
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -DNDEBUG -D_REENTRANT -DENV_UNIX")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBREAK_HANDLER -DUNICODE -D_UNICODE -DUNIX_USE_WIN_FILE -fPIC")
+add_subdirectory(lua-intf)
 add_subdirectory(p7zip)
 #end P7ZIP
 
 
 #begin luasqlite
-include_directories(
-    ${CMAKE_SOURCE_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${THIRDPART_INC}
-    lsqlite3
-)
-file(GLOB_RECURSE LSQLITE_SRC
-    lsqlite3/*.h
-    lsqlite3/*.c
-)
-set_property(
-    SOURCE ${LSQLITE_SRC}
-    APPEND
-    PROPERTY COMPILE_DEFINITIONS
-    LUA_LIB
-)
-list(APPEND THIRDPART_INC  lsqlite3)
-# set (THIRDPART_SRC ${THIRDPART_SRC} ${LSQLITE_SRC})
-source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LSQLITE_SRC)
-#end luasqlite
+# include_directories(
+#     ${CMAKE_SOURCE_DIR}
+#     ${CMAKE_CURRENT_BINARY_DIR}
+#     ${THIRDPART_INC}
+#     lsqlite3
+# )
+# file(GLOB_RECURSE LSQLITE_SRC
+#     lsqlite3/*.h
+#     lsqlite3/*.c
+# )
+# set_property(
+#     SOURCE ${LSQLITE_SRC}
+#     APPEND
+#     PROPERTY COMPILE_DEFINITIONS
+#     LUA_LIB
+# )
+# list(APPEND THIRDPART_INC  lsqlite3)
+# # set (THIRDPART_SRC ${THIRDPART_SRC} ${LSQLITE_SRC})
+# source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LSQLITE_SRC)
+
+add_subdirectory(lsqlite3)
+#end lsqlite3
 
 #begin lxp
 # include_directories(
@@ -204,8 +205,8 @@ source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LSQLITE_SRC)
 # list(APPEND THIRDPART_INC  lxp)
 # # set (THIRDPART_SRC ${THIRDPART_SRC} ${LSQLITE_SRC})
 # source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LXP_SRC)
-add_subdirectory(luaexpat)
 add_subdirectory(libexpat/expat)
+add_subdirectory(luaexpat)
 #end lxp
 
 
@@ -302,15 +303,13 @@ add_library(xlua SHARED
     ${LUA_SOCKET}
     ${XLUA_CORE}
     ${THIRDPART_SRC}
-    ${P7ZIP_SRC}
     ${LSQLITE_SRC}
-    ${LXP_SRC}
 )
 set_target_properties(xlua PROPERTIES MACOSX_FRAMEWORK_INFO_PLIST ../Info-xlua.plist)
 
-target_link_libraries(xlua lua_static)
-target_link_libraries(xlua expat)
-target_link_libraries(xlua p7zip)
+target_link_libraries(xlua liblua)
+# target_link_libraries(xlua expat)
+# target_link_libraries(xlua p7zip)
 
 # # p7zip
 # add_library(p7zip SHARED ${P7ZIP_SRC})

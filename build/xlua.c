@@ -1242,5 +1242,6 @@ LUA_API void luaopen_xlua(lua_State *L) {
 	luaL_register(L, "xlua", xlualib);
     lua_pop(L, 1);
 #endif
+//    luaopen_p7zip(L);
 }
 
