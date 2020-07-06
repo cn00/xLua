@@ -15,19 +15,23 @@ endif ()
 
 project(XLua)
 
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/libs)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 if ( IOS )
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fembed-bitcode")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fembed-bitcode")
 endif ()
 
 if(ANDROID)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DANDROID_NDK -fexceptions -DNDEBUG -D_REENTRANT -DENV_UNIX")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DANDROID_NDK -fexceptions -DNDEBUG -D_REENTRANT -DENV_UNIX -rpath=../libs/")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBREAK_HANDLER -DUNICODE -D_UNICODE -DUNIX_USE_WIN_FILE -fPIC")
+    message("android CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
 endif(ANDROID)
 
 # set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -x c++")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DLUAINTF_LINK_LUA_COMPILED_IN_CXX=1")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DLUAINTF_LINK_LUA_COMPILED_IN_CXX=0 -DLUAINTF_HEADERS_ONLY=1 -DENV_HAVE_WCTYPE_H=1")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DLUAINTF_LINK_LUA_COMPILED_IN_CXX=1 -DLUAINTF_HEADERS_ONLY=1 -DENV_HAVE_WCTYPE_H=1")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -lm")
 
 option ( UINT_ESPECIALLY "using custom ulong" OFF )
@@ -307,7 +311,10 @@ add_library(xlua SHARED
 )
 set_target_properties(xlua PROPERTIES MACOSX_FRAMEWORK_INFO_PLIST ../Info-xlua.plist)
 
-target_link_libraries(xlua liblua)
+find_library(LIBLUA liblua ../lua)
+target_link_libraries(xlua
+    liblua
+)
 # target_link_libraries(xlua expat)
 # target_link_libraries(xlua p7zip)
 
