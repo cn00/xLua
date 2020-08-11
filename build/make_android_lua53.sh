@@ -22,7 +22,7 @@ function build() {
     ABI=$1
     TOOLCHAIN_NAME=$2
     BUILD_PATH=build.Android.${ABI}
-    cmake -H. -B${BUILD_PATH} -DCMAKE_TOOLCHAIN_FILE=${NDK}/build/cmake/android.toolchain.cmake -DANDROID_NATIVE_API_LEVEL=${API} -DANDROID_TOOLCHAIN=clang -DANDROID_TOOLCHAIN_NAME=${TOOLCHAIN_NAME}
+    cmake -H. -B${BUILD_PATH} -DCMAKE_TOOLCHAIN_FILE=${NDK}/build/cmake/android.toolchain.cmake -DANDROID_NATIVE_API_LEVEL=${API} -DANDROID_TOOLCHAIN=clang -DANDROID_TOOLCHAIN_NAME=${TOOLCHAIN_ANME} -DANDROID_ABI=${ABI}
     cmake --build ${BUILD_PATH} --config Release
     mkdir -p ../../Assets/XLua/Plugins/Android/libs/${ABI}/
     cp -v ${BUILD_PATH}/libs/*.so ../../Assets/XLua/Plugins/Android/libs/${ABI}/
