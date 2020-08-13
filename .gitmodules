@@ -13,6 +13,6 @@
 [submodule "build/lua"]
 	path = build/lua
 	url = git@github.com:cn00/lua.git
-[submodule "lua-intf"]
-	path = lua-intf
+[submodule "build/lua-intf"]
+	path = build/lua-intf
 	url = /Volumes/Data/unity_test/XLua-src/build/lua-intf
