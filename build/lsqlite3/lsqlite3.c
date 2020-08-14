@@ -1796,6 +1796,16 @@ static int db_exec_callback(void* user, int columns, char **data, char **names) 
     return result;
 }
 
+static int db_config(lua_State* L){
+	sdb *db = lsqlite_checkdb(L, 1);
+	int op = luaL_checkint(L, 2);
+	int opv = luaL_checkint(L, 3);
+	int isEnabled = 0;
+	sqlite3_db_config(db->db, op, opv, &isEnabled);
+	lua_pushnumber(L, isEnabled);
+	return 1;
+}
+
 static int db_exec(lua_State *L) {
     sdb *db = lsqlite_checkdb(L, 1);
     const char *sql = luaL_checkstring(L, 2);
@@ -2255,8 +2265,12 @@ static const luaL_Reg dblib[] = {
     {"urows",               db_urows                },
     {"nrows",               db_nrows                },
 
+    {"config",				db_config				},
+
+    {"exe",                 db_exec                 },
     {"exec",                db_exec                 },
     {"execute",             db_exec                 },
+    
     {"close",               db_close                },
     {"close_vm",            db_close_vm             },
     {"get_ptr",             db_get_ptr              },

@@ -22,6 +22,7 @@ macro(source_group_by_dir proj_dir source_files)
     endif(MSVC OR APPLE)
 endmacro(source_group_by_dir)
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DSQLITE_ENABLE_LOAD_EXTENSION")
 
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
