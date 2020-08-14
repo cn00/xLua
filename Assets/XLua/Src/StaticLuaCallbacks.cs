@@ -835,7 +835,8 @@ namespace XLua
                 {
                     translator.assemblies.Add(assembly);
                 }
-                return 0;
+                translator.PushAny(L, assembly);
+                return 1;
             }
             catch (System.Exception e)
             {
