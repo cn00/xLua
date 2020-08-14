@@ -15,6 +15,7 @@ using LuaAPI = XLua.LuaDLL.Lua;
 using RealStatePtr = System.IntPtr;
 using LuaCSFunction = XLua.LuaDLL.lua_CSFunction;
 #endif
+using System.IO;
 
 
 namespace XLua
@@ -63,7 +64,8 @@ namespace XLua
 
         public LuaEnv()
         {
-            if (LuaAPI.xlua_get_lib_version() != LIB_VERSION_EXPECT)
+            var xluaversion = LuaAPI.xlua_get_lib_version();
+            if ( xluaversion!= LIB_VERSION_EXPECT)
             {
                 throw new InvalidProgramException("wrong lib version expect:"
                     + LIB_VERSION_EXPECT + " but got:" + LuaAPI.xlua_get_lib_version());
@@ -280,6 +282,11 @@ namespace XLua
 #if THREAD_SAFE || HOTFIX_ENABLE
             }
 #endif
+        }
+
+        public object[] DoFile(string path, LuaTable env = null)
+        {
+            return DoString(File.ReadAllText(path), path, env);
         }
 
         public object[] DoString(string chunk, string chunkName = "chunk", LuaTable env = null)
