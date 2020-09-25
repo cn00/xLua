@@ -9,4 +9,4 @@ popd
 cmake --build build_osx --config Release
 
 cd build_osx
-cp -Lvf libs/Release/*.dylib Release/libxlua.dylib ../../../Assets/XLua/Plugins/OSX/
+cp -Lvf libs/Release/*.dylib ../../../bin/

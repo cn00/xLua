@@ -598,7 +598,7 @@ namespace XLua
             throw new LuaException(reason);
         }
 
-#if !XLUA_GENERAL
+// #if !XLUA_GENERAL
         [MonoPInvokeCallback(typeof(LuaCSFunction))]
         internal static int Print(RealStatePtr L)
         {
@@ -626,7 +626,7 @@ namespace XLua
 
                     LuaAPI.lua_pop(L, 1);  /* pop result */
                 }
-                AppLog.d("LUA", s);
+                Console.WriteLine("{0}", s);
                 return 0;
             }
             catch (System.Exception e)
@@ -634,7 +634,7 @@ namespace XLua
                 return LuaAPI.luaL_error(L, "c# exception in print:" + e);
             }
         }
-#endif
+// #endif
 
 #if (!UNITY_SWITCH && !UNITY_WEBGL) || UNITY_EDITOR
         [MonoPInvokeCallback(typeof(LuaCSFunction))]

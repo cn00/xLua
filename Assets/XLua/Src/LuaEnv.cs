@@ -30,7 +30,7 @@ namespace XLua
 
         internal RealStatePtr rawL;
 
-        internal RealStatePtr L
+        public RealStatePtr L
         {
             get
             {
@@ -93,13 +93,13 @@ namespace XLua
 
                 LuaAPI.lua_atpanic(rawL, StaticLuaCallbacks.Panic);
 
-#if !XLUA_GENERAL
+// #if !XLUA_GENERAL
                 LuaAPI.lua_pushstdcallcfunction(rawL, StaticLuaCallbacks.Print);
                 if (0 != LuaAPI.xlua_setglobal(rawL, "print"))
                 {
                     throw new Exception("call xlua_setglobal fail!");
                 }
-#endif
+// #endif
 
                 //template engine lib register
                 TemplateEngine.LuaTemplate.OpenLib(rawL);

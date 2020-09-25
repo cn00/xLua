@@ -17,10 +17,10 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\Tools\</OutputPath>
+    <OutputPath>$(SolutionDir)/bin</OutputPath>
     <BaseIntermediateOutputPath>obj\Any CPU\Debug\XLua.Mini\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants>_DEBUG;DEBUG;TRACE;;XLUA_GENERAL</DefineConstants>
+    <DefineConstants>_DEBUG;DEBUG;TRACE;THREAD_SAFE;XLUA_GENERAL;GEN_CODE_MINIMIZE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -28,10 +28,10 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\Tools\</OutputPath>
+    <OutputPath>$(SolutionDir)/bin</OutputPath>
     <BaseIntermediateOutputPath>obj\Any CPU\Release\XLua.Mini\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants>;XLUA_GENERAL</DefineConstants>
+    <DefineConstants>THREAD_SAFE;XLUA_GENERAL;GEN_CODE_MINIMIZE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
