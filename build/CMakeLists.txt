@@ -4,7 +4,9 @@
 # http://opensource.org/licenses/MIT
 # Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
-cmake_minimum_required(VERSION 3.0)
+project(XLua)
+
+cmake_minimum_required(VERSION 3.3)
 
 if ( WIN32 AND NOT CYGWIN AND NOT ( CMAKE_SYSTEM_NAME STREQUAL "WindowsStore" ) AND NOT ANDROID)
 	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MT" CACHE STRING "")
@@ -13,9 +15,8 @@ if ( WIN32 AND NOT CYGWIN AND NOT ( CMAKE_SYSTEM_NAME STREQUAL "WindowsStore" ) 
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd" CACHE STRING "")
 endif ()
 
-project(XLua)
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/libs)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 if ( IOS )
@@ -31,7 +32,7 @@ endif(ANDROID)
 
 # set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -x c++")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DLUAINTF_LINK_LUA_COMPILED_IN_CXX=1")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DLUAINTF_LINK_LUA_COMPILED_IN_CXX=1 -DLUAINTF_HEADERS_ONLY=1 -DENV_HAVE_WCTYPE_H=1")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DLUAINTF_LINK_LUA_COMPILED_IN_CXX=1 -DLUAINTF_HEADERS_ONLY=1 -DENV_HAVE_WCTYPE_H=1 -Wno-macro-redefined")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -lm")
 
 option ( UINT_ESPECIALLY "using custom ulong" OFF )
@@ -146,6 +147,8 @@ add_subdirectory(lsqlite3)
 #begin lxp
 add_subdirectory(libexpat/expat)
 add_subdirectory(luaexpat)
+add_subdirectory(luasql)
+add_subdirectory(lfs)
 #end lxp
 
 

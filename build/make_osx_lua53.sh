@@ -9,4 +9,4 @@ popd
 cmake --build build_osx --config Release
 
 cd build_osx
-cp -Lvf libs/Release/*.dylib ../../../bin/
+cp -Lvf bin/Release/*.dylib ../../../bin/
