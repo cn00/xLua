@@ -4,9 +4,14 @@
 # http://opensource.org/licenses/MIT
 # Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
+cmake_minimum_required(VERSION 3.3)
+
 project(XLua)
 
-cmake_minimum_required(VERSION 3.3)
+# if(APPLE AND IOS)
+#     project(XLua-iOS)
+# endif(APPLE AND IOS)
+
 
 if ( WIN32 AND NOT CYGWIN AND NOT ( CMAKE_SYSTEM_NAME STREQUAL "WindowsStore" ) AND NOT ANDROID)
 	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MT" CACHE STRING "")
@@ -108,30 +113,7 @@ source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} FFI_SRC)
 #end FFI
 
 #begin LFB
-include_directories(
-    ${CMAKE_SOURCE_DIR}
-    lfb/src/flatbuffers/include
-    lfb/src
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${THIRDPART_INC}
-)
-set (LFB_SRC 
-    lfb/src/lflatbuffers_encode.cpp
-    lfb/src/lflatbuffers_decode.cpp
-    lfb/src/lflatbuffers.cpp
-
-    lfb/src/flatbuffers/util.cpp
-    lfb/src/flatbuffers/reflection.cpp
-)
-set_property(
-    SOURCE ${LFB_SRC}
-    APPEND
-    PROPERTY COMPILE_DEFINITIONS
-    LUA_LIB
-)
-list(APPEND THIRDPART_INC  lfb)
-set (THIRDPART_SRC ${THIRDPART_SRC} ${LFB_SRC})
-source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LFB_SRC)
+add_subdirectory(lfb)
 #end LFB
 
 #begin P7ZIP
@@ -147,9 +129,11 @@ add_subdirectory(lsqlite3)
 #begin lxp
 add_subdirectory(libexpat/expat)
 add_subdirectory(luaexpat)
-add_subdirectory(luasql)
 add_subdirectory(lfs)
-#end lxp
+
+if( APPLE AND NOT IOS)
+    add_subdirectory(luasql) 
+endif(NOT IOS)
 
 
 set(LUA_SRC_PATH lua/src)
@@ -202,7 +186,12 @@ source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LUA_CORE)
 source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LUA_LIB)
 source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} XLUA_CORE)
 
-# xlua
+
+link_directories(
+    ${CMAKE_BINARY_DIR}/bin
+    ${CMAKE_BINARY_DIR}/lib
+)
+
 add_library(xlua SHARED
     ${LUA_CORE}
     ${LUA_LIB}
@@ -232,61 +221,6 @@ target_link_libraries(xlua
 
 if (APPLE)
     if (IOS)
-        # # set_xcode_property(xlua DEVELOPMENT_TEAM "UL9WJVVZ42" "all")
-    	# set_xcode_property (xlua IPHONEOS_DEPLOYMENT_TARGET "8.0" "all")
-        # set(CMAKE_IOS_ARCHITECTURES "arm64")
-        # # xlua
-        # # set_target_properties ( xlua PROPERTIES BUNDLE TRUE )
-        # set_target_properties(xlua PROPERTIES
-        #     # SUFFIX .so
-        #     # FRAMEWORK begin
-        #     FRAMEWORK TRUE
-        #     FRAMEWORK_VERSION A
-        #     MACOSX_FRAMEWORK_IDENTIFIER com.cn.xlua
-        #     MACOSX_FRAMEWORK_INFO_PLIST ../Info-xlua.plist
-        #     PUBLIC_HEADER xlua.h
-        #     # FRAMEWORK end
-        #     IPHONEOS_DEPLOYMENT_TARGET "8.0"
-        #     DYLIB_INSTALL_NAME_BASE "@rpath"
-        #     XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Apple Development: navy cool (海军 冷)"
-        #     # https://stackoverflow.com/questions/40664125/cmake-and-code-signing-in-xcode-8-for-ios-projects
-        #     DEVELOPMENT_TEAM "3SZSPFHS9S"
-        # )
-
-        # # p7zip
-        # set_target_properties(p7zip PROPERTIES
-        #     # SUFFIX .so
-        #     # FRAMEWORK begin
-        #     FRAMEWORK TRUE
-        #     FRAMEWORK_VERSION A
-        #     MACOSX_FRAMEWORK_IDENTIFIER com.cn.p7zip
-        #     MACOSX_FRAMEWORK_INFO_PLIST ../Info-p7zip.plist
-        #     PUBLIC_HEADER p7zip.h
-        #     # FRAMEWORK end
-        #     IPHONEOS_DEPLOYMENT_TARGET "8.0"
-        #     DYLIB_INSTALL_NAME_BASE "@rpath"
-        #     XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Apple Development: navy cool (海军 冷)"
-        #     # https://stackoverflow.com/questions/40664125/cmake-and-code-signing-in-xcode-8-for-ios-projects
-        #     DEVELOPMENT_TEAM "3SZSPFHS9S"
-        # )
-
-
-        # # lsqlite3
-        # set_target_properties(lsqlite3 PROPERTIES
-        #     # SUFFIX .so
-        #     # FRAMEWORK begin
-        #     FRAMEWORK TRUE
-        #     FRAMEWORK_VERSION A
-        #     MACOSX_FRAMEWORK_IDENTIFIER com.cn.lsqlite3
-        #     MACOSX_FRAMEWORK_INFO_PLIST ../Info-lsqlite3.plist
-        #     PUBLIC_HEADER lsqlite3.h
-        #     # FRAMEWORK end
-        #     IPHONEOS_DEPLOYMENT_TARGET "8.0"
-        #     DYLIB_INSTALL_NAME_BASE "@rpath"
-        #     XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Apple Development: navy cool (海军 冷)"
-        #     # https://stackoverflow.com/questions/40664125/cmake-and-code-signing-in-xcode-8-for-ios-projects
-        #     DEVELOPMENT_TEAM "3SZSPFHS9S"
-        # )
    else () # osx
         ADD_DEFINITIONS(-DLUA_USE_MACOSX) #osx platform emmylua debugger must have this option or can not load cpath
         set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD_64_BIT)")

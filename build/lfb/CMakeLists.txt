@@ -37,7 +37,8 @@ include_directories(
 )
 
 link_directories(
-    ${CMAKE_SOURCE_DIR}/lib
+    ${CMAKE_BINARY_DIR}/bin
+    ${CMAKE_BINARY_DIR}/lib
 )
 
 add_library(lfb SHARED ${lfb_sources})
