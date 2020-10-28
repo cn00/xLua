@@ -626,7 +626,7 @@ namespace XLua
 
                     LuaAPI.lua_pop(L, 1);  /* pop result */
                 }
-                Console.WriteLine("{0}", s);
+                Console.WriteLine("[LUA]", s);
                 return 0;
             }
             catch (System.Exception e)
