@@ -5,6 +5,14 @@
         <LangVersion>8</LangVersion>
 	<DefineConstants>THREAD_SAFE;XLUA_GENERAL;GEN_CODE_MINIMIZE</DefineConstants>
     </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <OutputPath>$(SolutionDir)/bin</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <OutputPath>$(SolutionDir)/bin</OutputPath>
+    </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Cecil, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <HintPath>..\Lib\Mono.Cecil.dll</HintPath>
@@ -12,8 +20,6 @@
     <Reference Include="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
       <HintPath>..\Lib\mscorlib.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
     <Reference Include="mscorlib">
       <HintPath>..\Lib\mscorlib.dll</HintPath>
     </Reference>
