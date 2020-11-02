@@ -16,3 +16,6 @@
 [submodule "build/lua-intf"]
 	path = build/lua-intf
 	url = /Volumes/Data/unity_test/XLua-src/build/lua-intf
+[submodule "build/nslua"]
+	path = build/nslua
+	url = https://github.com/cn00/NSLua.git
