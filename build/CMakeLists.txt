@@ -131,9 +131,9 @@ add_subdirectory(libexpat/expat)
 add_subdirectory(luaexpat)
 add_subdirectory(lfs)
 
-if( APPLE AND NOT IOS)
+# if( APPLE AND NOT IOS)
     add_subdirectory(luasql) 
-endif(NOT IOS)
+# endif(NOT IOS)
 
 
 set(LUA_SRC_PATH lua/src)
@@ -220,8 +220,9 @@ target_link_libraries(xlua
 # set_target_properties(lsqlite3 PROPERTIES MACOSX_FRAMEWORK_INFO_PLIST ../Info-lsqlite3.plist)
 
 if (APPLE)
+    add_subdirectory(nslua)
     if (IOS)
-   else () # osx
+    else () # osx
         ADD_DEFINITIONS(-DLUA_USE_MACOSX) #osx platform emmylua debugger must have this option or can not load cpath
         set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD_64_BIT)")
         # set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD)")
