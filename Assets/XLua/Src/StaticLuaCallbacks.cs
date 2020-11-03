@@ -606,7 +606,8 @@ namespace XLua
             try
             {
                 int n = LuaAPI.lua_gettop(L);
-                string s = String.Empty;
+                var sb = new System.Text.StringBuilder(256);
+                sb.Append("[LUA] ");
 
                 if (0 != LuaAPI.xlua_getglobal(L, "tostring"))
                 {
@@ -621,13 +622,13 @@ namespace XLua
                     {
                         return LuaAPI.lua_error(L);
                     }
-                    s += LuaAPI.lua_tostring(L, -1);
+                    sb.Append(LuaAPI.lua_tostring(L, -1));
 
-                    if (i != n) s += "\t";
+                    if (i != n) sb.Append("\t");
 
                     LuaAPI.lua_pop(L, 1);  /* pop result */
                 }
-                Debug.WriteLine("[LUA] {0}", s);
+                Debug.WriteLine(sb.ToString());
                 return 0;
             }
             catch (System.Exception e)
