@@ -15,6 +15,7 @@ using LuaAPI = XLua.LuaDLL.Lua;
 using RealStatePtr = System.IntPtr;
 using LuaCSFunction = XLua.LuaDLL.lua_CSFunction;
 #endif
+using System.Diagnostics;
 
 namespace XLua
 {
@@ -626,7 +627,7 @@ namespace XLua
 
                     LuaAPI.lua_pop(L, 1);  /* pop result */
                 }
-                Console.WriteLine("[LUA] {0}", s);
+                Debug.WriteLine("[LUA] {0}", s);
                 return 0;
             }
             catch (System.Exception e)
