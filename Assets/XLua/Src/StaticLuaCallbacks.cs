@@ -628,7 +628,11 @@ namespace XLua
 
                     LuaAPI.lua_pop(L, 1);  /* pop result */
                 }
+                #if UNITY_EDITOR
+                UnityEngine.Debug.Log(sb.ToString());
+                #else
                 Debug.WriteLine(sb.ToString());
+                #endif
                 return 0;
             }
             catch (System.Exception e)
