@@ -93,13 +93,13 @@ namespace XLua
 
                 LuaAPI.lua_atpanic(rawL, StaticLuaCallbacks.Panic);
 
-// #if !XLUA_GENERAL
+#if !XLUA_GENERAL
                 LuaAPI.lua_pushstdcallcfunction(rawL, StaticLuaCallbacks.Print);
                 if (0 != LuaAPI.xlua_setglobal(rawL, "print"))
                 {
                     throw new Exception("call xlua_setglobal fail!");
                 }
-// #endif
+#endif
 
                 //template engine lib register
                 TemplateEngine.LuaTemplate.OpenLib(rawL);
@@ -113,7 +113,7 @@ namespace XLua
                 DoString(init_xlua, "Init");
                 init_xlua = null;
 
-#if !UNITY_SWITCH || UNITY_EDITOR
+#if (!UNITY_SWITCH && !UNITY_WEBGL) || UNITY_EDITOR
                 AddBuildin("socket.core", StaticLuaCallbacks.LoadSocketCore);
                 AddBuildin("socket", StaticLuaCallbacks.LoadSocketCore);
 #endif

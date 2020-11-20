@@ -29,10 +29,10 @@ function build() {
     cp -v ${BUILD_PATH}/bin/*.so ../../Assets/XLua/Plugins/Android/libs/${ABI}/
 }
 
-build armeabi-v7a arm-linux-androideabi-4.9
+# build armeabi-v7a arm-linux-androideabi-4.9
 
 # build arm64-v8a  arm-linux-androideabi-clang
 
 # build x86 x86-4.9
 
-# build x86_64 x86_64-4.9
+build x86_64 x86_64-4.9
