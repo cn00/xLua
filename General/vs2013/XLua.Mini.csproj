@@ -95,6 +95,4 @@
       <Link>Assets\XLua\Src\Utils.cs</Link>
     </Compile>
   </ItemGroup>
-  <ItemGroup>
-  </ItemGroup>
 </Project>

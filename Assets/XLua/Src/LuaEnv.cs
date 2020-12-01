@@ -46,6 +46,14 @@ namespace XLua
 
         internal ObjectTranslator translator;
 
+        public ObjectTranslator Translator
+        {
+            get
+            {
+                return translator;
+            }
+        }
+        
         internal int errorFuncRef = -1;
 
 #if THREAD_SAFE || HOTFIX_ENABLE

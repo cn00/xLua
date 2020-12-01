@@ -6,12 +6,10 @@
 
 cmake_minimum_required(VERSION 3.3)
 
+include("cmake/source_group_by_dir.cmake")
+include ( lua/cmake/dist.cmake )
+
 project(XLua)
-
-# if(APPLE AND IOS)
-#     project(XLua-iOS)
-# endif(APPLE AND IOS)
-
 
 if ( WIN32 AND NOT CYGWIN AND NOT ( CMAKE_SYSTEM_NAME STREQUAL "WindowsStore" ) AND NOT ANDROID)
 	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MT" CACHE STRING "")
@@ -35,10 +33,17 @@ if(ANDROID)
     message("android CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
 endif(ANDROID)
 
+if(APPLE)
+  set(CMAKE_MACOSX_RPATH ON)
+  SET(CMAKE_SKIP_BUILD_RPATH TRUE)
+  SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+  SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+#   SET(CMAKE_INSTALL_RPATH "../")
+endif(APPLE)
+
 # set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -x c++")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DLUAINTF_LINK_LUA_COMPILED_IN_CXX=1")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DLUAINTF_LINK_LUA_COMPILED_IN_CXX=1 -DLUAINTF_HEADERS_ONLY=1 -DENV_HAVE_WCTYPE_H=1 -Wno-macro-redefined")
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -lm")
 
 option ( UINT_ESPECIALLY "using custom ulong" OFF )
 option ( USING_LUAJIT "using luajit" OFF )
@@ -49,25 +54,10 @@ find_path(XLUA_PROJECT_DIR NAMES SConstruct
     PATHS 
     ${CMAKE_SOURCE_DIR}
     NO_DEFAULT_PATH
-    )
+)
 
 MARK_AS_ADVANCED(XLUA_PROJECT_DIR)
-macro(source_group_by_dir proj_dir source_files)
-    if(MSVC OR APPLE)
-        get_filename_component(sgbd_cur_dir ${proj_dir} ABSOLUTE)
-        foreach(sgbd_file ${${source_files}})
-			get_filename_component(sgbd_abs_file ${sgbd_file} ABSOLUTE)
-            file(RELATIVE_PATH sgbd_fpath ${sgbd_cur_dir} ${sgbd_abs_file})
-            string(REGEX REPLACE "\(.*\)/.*" \\1 sgbd_group_name ${sgbd_fpath})
-            string(COMPARE EQUAL ${sgbd_fpath} ${sgbd_group_name} sgbd_nogroup)
-            string(REPLACE "/" "\\" sgbd_group_name ${sgbd_group_name})
-            if(sgbd_nogroup)
-                set(sgbd_group_name "\\")
-            endif(sgbd_nogroup)
-            source_group(${sgbd_group_name} FILES ${sgbd_file})
-        endforeach(sgbd_file)
-    endif(MSVC OR APPLE)
-endmacro(source_group_by_dir)
+
 
 #begin lpeg
 set ( LPEG_SRC
@@ -135,7 +125,6 @@ add_subdirectory(lfs)
     add_subdirectory(luasql) 
 # endif(NOT IOS)
 
-
 set(LUA_SRC_PATH lua/src)
 
 set ( LUA_IDSIZE 120 CACHE STRING "gives the maximum size for the description of the source." )
@@ -200,12 +189,18 @@ add_library(xlua SHARED
     ${THIRDPART_SRC}
     ${LSQLITE_SRC}
 )
-set_target_properties(xlua PROPERTIES MACOSX_FRAMEWORK_INFO_PLIST ../Info-xlua.plist)
 
-find_library(LIBLUA liblua ../lua)
+# find_library(LIBLUA liblua ../lua)
 target_link_libraries(xlua
     liblua
 )
+install_library(xlua)
+if (APPLE)
+    set_target_properties(xlua PROPERTIES MACOSX_FRAMEWORK_INFO_PLIST ../Info-xlua.plist)
+    set_target_properties(xlua PROPERTIES 
+        INSTALL_RPATH "@rpath;@rpath/lib;@rpath/../lib;@executable_path/Frameworks;@loader_path;@loader_path/libs;@loader_path/Frameworks"
+    )
+endif()
 # target_link_libraries(xlua expat)
 # target_link_libraries(xlua p7zip)
 
@@ -221,8 +216,7 @@ target_link_libraries(xlua
 
 if (APPLE)
     add_subdirectory(nslua)
-    if (IOS)
-    else () # osx
+    if (OSX) # osx
         ADD_DEFINITIONS(-DLUA_USE_MACOSX) #osx platform emmylua debugger must have this option or can not load cpath
         set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD_64_BIT)")
         # set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD)")

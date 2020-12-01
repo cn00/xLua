@@ -60,3 +60,4 @@ source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} SRCS)
 target_link_libraries(lsqlite3
     liblua
 )
+install_library(lsqlite3)
