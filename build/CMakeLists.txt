@@ -38,12 +38,12 @@ if(APPLE)
   SET(CMAKE_SKIP_BUILD_RPATH TRUE)
   SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
   SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-#   SET(CMAKE_INSTALL_RPATH "../")
+    set(CMAKE_INSTALL_RPATH "@loader_path")
 endif(APPLE)
 
-# set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -x c++")
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DLUAINTF_LINK_LUA_COMPILED_IN_CXX=1")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DLUAINTF_LINK_LUA_COMPILED_IN_CXX=1 -DLUAINTF_HEADERS_ONLY=1 -DENV_HAVE_WCTYPE_H=1 -Wno-macro-redefined")
+# # set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -x c++")
+# # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DLUAINTF_LINK_LUA_COMPILED_IN_CXX=1")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DLUAINTF_LINK_LUA_COMPILED_IN_CXX=1 -DLUAINTF_HEADERS_ONLY=1 -DENV_HAVE_WCTYPE_H=1 -Wno-macro-redefined")
 
 option ( UINT_ESPECIALLY "using custom ulong" OFF )
 option ( USING_LUAJIT "using luajit" OFF )
@@ -58,48 +58,14 @@ find_path(XLUA_PROJECT_DIR NAMES SConstruct
 
 MARK_AS_ADVANCED(XLUA_PROJECT_DIR)
 
+add_subdirectory(lua)
 
 #begin lpeg
-set ( LPEG_SRC
-    lpeg/lpcap.c
-    lpeg/lpcode.c
-    lpeg/lpprint.c
-    lpeg/lptree.c
-    lpeg/lpvm.c
-)
-set_property(
-    SOURCE ${LPEG_SRC}
-    APPEND
-    PROPERTY COMPILE_DEFINITIONS
-    LUA_LIB
-)
-list(APPEND THIRDPART_INC  lpeg)
-set (THIRDPART_SRC ${THIRDPART_SRC} ${LPEG_SRC})
-source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} LPEG_SRC)
+add_subdirectory(lpeg)
 #end lpeg
 
 #begin FFI
-include_directories(
-    ${CMAKE_SOURCE_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${THIRDPART_INC}
-    ffi
-)
-set (FFI_SRC 
-    ffi/parser.c 
-    ffi/ctype.c 
-    ffi/call.c
-    ffi/ffi.c
-)
-set_property(
-    SOURCE ${FFI_SRC}
-    APPEND
-    PROPERTY COMPILE_DEFINITIONS
-    LUA_LIB
-)
-list(APPEND THIRDPART_INC  ffi)
-set (THIRDPART_SRC ${THIRDPART_SRC} ${FFI_SRC})
-source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} FFI_SRC)
+add_subdirectory(ffi)
 #end FFI
 
 #begin LFB
@@ -125,11 +91,9 @@ add_subdirectory(lfs)
     add_subdirectory(luasql) 
 # endif(NOT IOS)
 
+add_subdirectory(luasocket)
+
 set(LUA_SRC_PATH lua/src)
-
-set ( LUA_IDSIZE 120 CACHE STRING "gives the maximum size for the description of the source." )
-
-configure_file ( ${LUA_SRC_PATH}/luaconf.h.in ${CMAKE_CURRENT_BINARY_DIR}/luaconf.h )
 
 include_directories(
     ${CMAKE_SOURCE_DIR}
@@ -137,29 +101,6 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${THIRDPART_INC}
 )
-
-add_subdirectory(lua)
-
-set ( LUA_SOCKET
-    luasocket/auxiliar.c
-    luasocket/buffer.c
-    luasocket/except.c
-    luasocket/inet.c
-    luasocket/io.c
-    luasocket/luasocket.c
-    luasocket/mime.c
-    luasocket/options.c
-    luasocket/select.c
-    luasocket/tcp.c
-    luasocket/timeout.c
-    luasocket/udp.c 
-)
-
-if ( WIN32 AND NOT CYGWIN )
-    list (APPEND LUA_SOCKET luasocket/wsocket.c)
-else ( )
-    list (APPEND LUA_SOCKET luasocket/usocket.c)
-endif ( )
 
 set ( XLUA_CORE
     i64lib.c
@@ -182,12 +123,7 @@ link_directories(
 )
 
 add_library(xlua SHARED
-    ${LUA_CORE}
-    ${LUA_LIB}
-    ${LUA_SOCKET}
     ${XLUA_CORE}
-    ${THIRDPART_SRC}
-    ${LSQLITE_SRC}
 )
 
 # find_library(LIBLUA liblua ../lua)
@@ -195,10 +131,11 @@ target_link_libraries(xlua
     liblua
 )
 install_library(xlua)
+
 if (APPLE)
     set_target_properties(xlua PROPERTIES MACOSX_FRAMEWORK_INFO_PLIST ../Info-xlua.plist)
     set_target_properties(xlua PROPERTIES 
-        INSTALL_RPATH "@rpath;@rpath/lib;@rpath/../lib;@executable_path/Frameworks;@loader_path;@loader_path/libs;@loader_path/Frameworks"
+        INSTALL_RPATH "@executable_path/Frameworks;@loader_path;@loader_path/libs;@loader_path/Frameworks"
     )
 endif()
 # target_link_libraries(xlua expat)
@@ -218,7 +155,6 @@ if (APPLE)
     add_subdirectory(nslua)
     if (OSX) # osx
         ADD_DEFINITIONS(-DLUA_USE_MACOSX) #osx platform emmylua debugger must have this option or can not load cpath
-        set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD_64_BIT)")
         # set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD)")
 
         # set_target_properties (xlua PROPERTIES SUFFIX .so)

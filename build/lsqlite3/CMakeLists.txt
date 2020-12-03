@@ -56,8 +56,8 @@ source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} SRCS)
 #     # https://stackoverflow.com/questions/40664125/cmake-and-code-signing-in-xcode-8-for-ios-projects
 #     DEVELOPMENT_TEAM "3SZSPFHS9S"
 # )
-
 target_link_libraries(lsqlite3
     liblua
+    # libsqlite3
 )
 install_library(lsqlite3)

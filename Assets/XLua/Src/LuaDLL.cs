@@ -41,8 +41,8 @@ namespace XLua.LuaDLL
 		// #elif UNITY_IOS
 		// public const string LUADLL = "@rpath/xlua.framework/xlua";
 		#else
-        public const string XLUADLL = "libxlua";
-        public const string LUADLL  = "liblua";
+        public const string XLUADLL = "lib/libxlua.dylib";
+        public const string LUADLL  = "lib/liblua.dylib";
 		#endif
 
         #region lua
