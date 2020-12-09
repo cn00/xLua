@@ -18,7 +18,7 @@ source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} lfb_sources)
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/
   ${CMAKE_CURRENT_SOURCE_DIR}/src
-  ${CMAKE_CURRENT_SOURCE_DIR}/../lua/src
+  ${CMAKE_CURRENT_SOURCE_DIR}/../lua
   ${CMAKE_CURRENT_SOURCE_DIR}/src/flatbuffers/include
 )
 

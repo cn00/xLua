@@ -20,7 +20,7 @@ source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} lpeg_sources)
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/
-  ${CMAKE_CURRENT_SOURCE_DIR}/../lua/src
+  ${CMAKE_CURRENT_SOURCE_DIR}/../lua
 )
 
 add_library(lpeg SHARED ${lpeg_sources})

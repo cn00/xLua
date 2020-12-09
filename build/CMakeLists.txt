@@ -6,10 +6,15 @@
 
 cmake_minimum_required(VERSION 3.3)
 
+if(x${ROOT_PROJECT_NAME} STREQUAL "x")
+    set(ROOT_PROJECT_NAME XLua)
+endif()
+
+
+project(${ROOT_PROJECT_NAME})
+
 include("cmake/source_group_by_dir.cmake")
 include ( lua/cmake/dist.cmake )
-
-project(XLua)
 
 if ( WIN32 AND NOT CYGWIN AND NOT ( CMAKE_SYSTEM_NAME STREQUAL "WindowsStore" ) AND NOT ANDROID)
 	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MT" CACHE STRING "")
@@ -34,11 +39,22 @@ if(ANDROID)
 endif(ANDROID)
 
 if(APPLE)
-  set(CMAKE_MACOSX_RPATH ON)
-  SET(CMAKE_SKIP_BUILD_RPATH TRUE)
-  SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-  SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+    set(CMAKE_MACOSX_RPATH ON)
+    SET(CMAKE_SKIP_BUILD_RPATH TRUE)
+    SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+    SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
     set(CMAKE_INSTALL_RPATH "@loader_path")
+    set(CMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH "NO")
+    if(IOS)
+        SET (CMAKE_OSX_SYSROOT "iphoneos")
+        SET (CMAKE_XCODE_EFFECTIVE_PLATFORMS "iphoneos")
+        # set(CMAKE_XCODE_ATTRIBUTE_SUPPORTED_PLATFORMS ios)
+        # set(CMAKE_XCODE_ATTRIBUTE_SDKROOT ios)
+    else()
+        set(CMAKE_XCODE_ATTRIBUTE_SUPPORTED_PLATFORMS "macosx")
+        set(CMAKE_XCODE_ATTRIBUTE_SDKROOT "macosx")
+    endif(IOS)
+    
 endif(APPLE)
 
 # # set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -x c++")
@@ -89,11 +105,12 @@ add_subdirectory(lfs)
 
 # if( APPLE AND NOT IOS)
     add_subdirectory(luasql) 
+    add_subdirectory(mariadb) 
 # endif(NOT IOS)
 
 add_subdirectory(luasocket)
 
-set(LUA_SRC_PATH lua/src)
+set(LUA_SRC_PATH lua/)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}

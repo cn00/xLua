@@ -5,22 +5,7 @@
 
 cmake_minimum_required(VERSION 3.4.1)
 
-macro(source_group_by_dir proj_dir source_files)
-    if(MSVC OR APPLE)
-        get_filename_component(sgbd_cur_dir ${proj_dir} ABSOLUTE)
-        foreach(sgbd_file ${${source_files}})
-            get_filename_component(sgbd_abs_file ${sgbd_file} ABSOLUTE)
-            file(RELATIVE_PATH sgbd_fpath ${sgbd_cur_dir} ${sgbd_abs_file})
-            string(REGEX REPLACE "\(.*\)/.*" \\1 sgbd_group_name ${sgbd_fpath})
-            string(COMPARE EQUAL ${sgbd_fpath} ${sgbd_group_name} sgbd_nogroup)
-            string(REPLACE "/" "\\" sgbd_group_name ${sgbd_group_name})
-            if(sgbd_nogroup)
-                set(sgbd_group_name "\\")
-            endif(sgbd_nogroup)
-            source_group(${sgbd_group_name} FILES ${sgbd_file})
-        endforeach(sgbd_file)
-    endif(MSVC OR APPLE)
-endmacro(source_group_by_dir)
+include("../cmake/source_group_by_dir.cmake")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DSQLITE_ENABLE_LOAD_EXTENSION")
 
@@ -35,7 +20,7 @@ file(GLOB_RECURSE SRCS
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/
-    ${CMAKE_CURRENT_SOURCE_DIR}/../lua/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/../lua
 )
 
 add_library(lsqlite3 SHARED ${SRCS})

@@ -17,7 +17,7 @@ source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} socket_sources)
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/
-  ${CMAKE_CURRENT_SOURCE_DIR}/../lua/src
+  ${CMAKE_CURRENT_SOURCE_DIR}/../lua
 )
 
 link_directories(
