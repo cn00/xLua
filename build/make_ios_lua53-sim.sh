@@ -1,6 +1,6 @@
-mkdir -p build_ios-sim && cd build_ios-sim
-cmake -DIOS_PLATFORM=SIMULATOR -DCMAKE_TOOLCHAIN_FILE=../cmake/iOS.cmake  -GXcode ../
+mkdir -p build.iOS.sim && cd build.iOS.sim
+cmake -DIOS_PLATFORM=SIMULATOR -DCMAKE_TOOLCHAIN_FILE=../build/cmake/iOS.cmake  -GXcode ../build
 cd ..
-cmake --build build_ios-sim --config Release
+cmake --build build.iOS.sim --config Release
 mkdir -p plugin_lua53/Plugins/iOS/
-cp build_ios-sim/Release-iphonesimulator/libxlua.a plugin_lua53/Plugins/iOS/libxlua-sim.a
+cp build.iOS.sim/Release-iphonesimulator/libxlua.a plugin_lua53/Plugins/iOS/libxlua-sim.a

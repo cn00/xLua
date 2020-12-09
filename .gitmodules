@@ -19,3 +19,6 @@
 [submodule "build/nslua"]
 	path = build/nslua
 	url = https://github.com/cn00/NSLua.git
+[submodule "build/mariadb"]
+	path = build/mariadb
+	url = git@github.com:cn00/mariadb-connector-c.git
