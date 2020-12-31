@@ -20,7 +20,7 @@ done
 ## fixed Killed: 9
 /usr/bin/codesign --force --sign - --timestamp=none build.OSX/bin/${build_type}/*.dylib
 
-outdir='Assets/XLua/Plugins/OSX/'
+outdir='Assets/Plugins/OSX/'
 mkdir -p ${outdir}
 cp -vf build.OSX/bin/${build_type}/* ${outdir}
 

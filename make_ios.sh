@@ -9,11 +9,11 @@ cmake --clean-first -DCMAKE_TOOLCHAIN_FILE=../build/cmake/ios.toolchain.cmake -D
       -DCMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM="D2JNH2GMKP" -GXcode ../build
 cd ..
 
-# gsed -e '
-#     s#/Applications/Xcode.app/Contents/Developer/Platforms/iPhone.*.platform/Developer/SDKs/iPhone.*.sdk/usr/lib/libobjc.tbd#-lobjc#g
-#     s#/Applications/Xcode.app/Contents/Developer/Platforms/iPhone.*.platform/Developer/SDKs/iPhone.*.sdk/usr/lib/libz.tbd#-lz#g
-#     s#/Applications/Xcode.app/Contents/Developer/Platforms/iPhone.*.platform/Developer/SDKs/iPhone.*.sdk/usr/lib/libiconv.tbd#-liconv#g
-# ' -i ${build_dir}/XLua.xcodeproj/project.pbxproj
+gsed -e '
+    s#/Applications/Xcode.app/Contents/Developer/Platforms/iPhone.*.platform/Developer/SDKs/iPhone.*.sdk/usr/lib/libobjc.tbd#-lobjc#g
+    s#/Applications/Xcode.app/Contents/Developer/Platforms/iPhone.*.platform/Developer/SDKs/iPhone.*.sdk/usr/lib/libz.tbd#-lz#g
+    s#/Applications/Xcode.app/Contents/Developer/Platforms/iPhone.*.platform/Developer/SDKs/iPhone.*.sdk/usr/lib/libiconv.tbd#-liconv#g
+' -i ${build_dir}/XLua.xcodeproj/project.pbxproj
 
 # set -x
 
@@ -29,9 +29,9 @@ for i in `ls ${build_dir}/bin/${build_type}/*.dylib`; do
     install_name_tool -id @loader_path/${i##*\/} $i;
     install_name_tool -change @executable_path/../lib/liblua.dylib @loader_path/liblua.dylib $i;
 done
-/usr/bin/codesign --force --sign - --timestamp=none ${build_dir}/bin/${build_type}/*.dylib
+/usr/bin/codesign --force --sign - --timestamp=none ${build_dir}/bin/${build_type}/*.{framework,dylib}
 lipo -i ${build_dir}/bin/${build_type}/*.dylib
 
 outdir="Assets/XLua/Plugins/${build_target}/"
 mkdir -p ${outdir}
-cp -vf ${build_dir}/bin/${build_type}/* ${outdir}
+cp -rvf ${build_dir}/bin/${build_type}/*.{framework,dylib} ${outdir}
