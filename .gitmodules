@@ -15,10 +15,13 @@
 	url = git@github.com:cn00/lua.git
 [submodule "build/lua-intf"]
 	path = build/lua-intf
-	url = /Volumes/Data/unity_test/XLua-src/build/lua-intf
+	url = build/lua-intf
 [submodule "build/nslua"]
 	path = build/nslua
 	url = https://github.com/cn00/NSLua.git
 [submodule "build/mariadb"]
 	path = build/mariadb-connector-c
 	url = git@github.com:cn00/mariadb-connector-c.git
+[submodule "build/lfs"]
+	path = build/lfs
+	url = git@github.com:keplerproject/luafilesystem.git
