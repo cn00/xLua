@@ -25,3 +25,6 @@
 [submodule "build/lfs"]
 	path = build/lfs
 	url = git@github.com:keplerproject/luafilesystem.git
+[submodule "build/luasql"]
+	path = build/luasql
+	url = git@github.com:cn00/luasql.git
