@@ -24,8 +24,8 @@ if ( WIN32 AND NOT CYGWIN AND NOT ( CMAKE_SYSTEM_NAME STREQUAL "WindowsStore" ) 
 endif ()
 
 
-# set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 if(ANDROID)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DANDROID_NDK -fexceptions -DNDEBUG -D_REENTRANT -DENV_UNIX")
@@ -105,7 +105,7 @@ add_subdirectory(lfs)
     message("OSX:${OSX} APPLE:${APPLE} IOS:${IOS}")
     if(IOS)
         message(":OSX:${OSX}")
-        add_subdirectory(mariadb)
+        add_subdirectory(mariadb-connector-c)
     endif()
     
 # endif(NOT IOS)
