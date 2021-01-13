@@ -22,7 +22,7 @@ rm -rf ${build_dir}/bin/${build_type}/*
 OTHER_SDK_TO_BUILD="iphonesimulator" # -> fat
 # OTHER_SDK_TO_BUILD="iphoneos"
 # specific targets https://stackoverflow.com/questions/47553569/how-can-i-build-multiple-targets-using-cmake-build
-cmake --build ${build_dir} --config ${build_type} --target xlua lfs lfb expat lsqlite3 libmariadb luasql p7zip --  -sdk "${OTHER_SDK_TO_BUILD}"
+cmake --build ${build_dir} --config ${build_type} --target xlua lfs lfb expat lsqlite3 libmariadb luasql p7zip luasocket mime serial --  -sdk "${OTHER_SDK_TO_BUILD}"
 
 for i in `ls ${build_dir}/bin/${build_type}/*.dylib`; do
     echo $i

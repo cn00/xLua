@@ -7,7 +7,7 @@ build_type="Release" #Debug
 mkdir -p $thisdir/build.OSX && pushd $_
 cmake --clean-first -GXcode ../build  -DOSX=TRUE # -DCMAKE_TOOLCHAIN_FILE=../build/cmake/ios.toolchain.cmake -DPLATFORM="macosx"
 popd
-cmake --build build.OSX --config ${build_type} #--target xlua lfs lfb expat luasql lsqlite3 nslua libmariadb p7zip
+cmake --build build.OSX --config ${build_type} # --target xlua lfs lfb expat luasql lsqlite3 nslua p7zip #libmariadb
 
 # cmake --install build.OSX --prefix ../../cslua/bin/Debug/
 # cmake --install build.OSX --prefix ../../cslua/bin/Release/

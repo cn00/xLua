@@ -10,6 +10,8 @@ project(socket)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -L${CMAKE_CURRENT_SOURCE_DIR} -std=gnu++11 -stdlib=libc++ ")
 
 file(GLOB_RECURSE socket_sources *.c *.h **/*.lua)
+file(GLOB_RECURSE socket_mime_sources mime/*.c mime/*.h)
+file(GLOB_RECURSE socket_serial_sources serial/*.c serial/*.h)
 
 
 source_group_by_dir(${CMAKE_CURRENT_SOURCE_DIR} socket_sources)
@@ -25,7 +27,11 @@ link_directories(
 )
 
 add_library(socket SHARED ${socket_sources})
+add_library(mime   SHARED ${socket_mime_sources})
+add_library(serial SHARED ${socket_serial_sources})
 target_link_libraries(socket liblua)
+target_link_libraries(mime socket liblua)
+target_link_libraries(serial socket liblua)
 
 install_library(socket)
 
