@@ -13,7 +13,7 @@ namespace XLua
     [Serializable]
     public class LuaException : Exception
     {
-        public LuaException(string message) : base("[LUA] " + message)
+        public LuaException(string message) : base(message)
         {}
     }
 }

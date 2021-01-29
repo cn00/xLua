@@ -607,7 +607,7 @@ namespace XLua
             {
                 int n = LuaAPI.lua_gettop(L);
                 var sb = new System.Text.StringBuilder(256);
-                sb.Append("[LUA] ");
+                sb.Append("LUA:");
 
                 if (0 != LuaAPI.xlua_getglobal(L, "tostring"))
                 {
@@ -628,7 +628,7 @@ namespace XLua
 
                     LuaAPI.lua_pop(L, 1);  /* pop result */
                 }
-                #if UNITY_EDITOR
+                #if !XLUA_GENERAL
                 UnityEngine.Debug.Log(sb.ToString());
                 #else
                 Debug.WriteLine(sb.ToString());

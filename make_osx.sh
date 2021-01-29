@@ -5,9 +5,10 @@ cd "$thisdir"
 
 build_type="Release" #Debug
 mkdir -p $thisdir/build.OSX && pushd $_
+mkdir -p bin/${build_type}
 cmake --clean-first -GXcode ../build  -DOSX=TRUE # -DCMAKE_TOOLCHAIN_FILE=../build/cmake/ios.toolchain.cmake -DPLATFORM="macosx"
+cmake --build . --config ${build_type} # --target xlua lfs lfb expat luasql lsqlite3 nslua p7zip #libmariadb
 popd
-cmake --build build.OSX --config ${build_type} # --target xlua lfs lfb expat luasql lsqlite3 nslua p7zip #libmariadb
 
 # cmake --install build.OSX --prefix ../../cslua/bin/Debug/
 # cmake --install build.OSX --prefix ../../cslua/bin/Release/
@@ -20,14 +21,15 @@ done
 ## fixed Killed: 9
 /usr/bin/codesign --force --sign - --timestamp=none build.OSX/bin/${build_type}/*.dylib
 
-outdir='Assets/Plugins/OSX/'
-mkdir -p ${outdir}
-cp -vf build.OSX/bin/${build_type}/* ${outdir}
+# outdir='Assets/Plugins/OSX/'
+# mkdir -p ${outdir}
+# cp -vf build.OSX/bin/${build_type}/* ${outdir}
 
-outdir='./lib/'
-mkdir $outdir
-# cp -vf build.OSX/bin/${build_type}/*.dylib ../lib/
-cp -vf build.OSX/bin/${build_type}/* ${outdir}
+# outdir='./lib/'
+# mkdir $outdir
+# cp -vf build.OSX/bin/${build_type}/* ${outdir}
+
+
 # rm -rf build.OSX/bin/${build_type}.bak
 # mv -f build.OSX/bin/${build_type} build.OSX/bin/${build_type}.bak
 

@@ -27,6 +27,7 @@ endif ()
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-command-line-argument")
 if(ANDROID)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DANDROID_NDK -fexceptions -DNDEBUG -D_REENTRANT -DENV_UNIX")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBREAK_HANDLER -DUNICODE -D_UNICODE -DUNIX_USE_WIN_FILE -fPIC")
@@ -100,15 +101,10 @@ add_subdirectory(libexpat/expat)
 add_subdirectory(luaexpat)
 add_subdirectory(lfs)
 
-# if( APPLE AND NOT IOS)
-    add_subdirectory(luasql)
-    message("OSX:${OSX} APPLE:${APPLE} IOS:${IOS}")
-    if(IOS)
-        message(":OSX:${OSX}")
-        add_subdirectory(mariadb-connector-c)
-    endif()
-    
-# endif(NOT IOS)
+if( NOT OSX )
+    add_subdirectory(mariadb-connector-c)
+endif(NOT OSX )
+add_subdirectory(luasql)
 
 add_subdirectory(luasocket)
 

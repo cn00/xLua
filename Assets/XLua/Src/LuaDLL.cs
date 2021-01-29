@@ -37,12 +37,12 @@ namespace XLua.LuaDLL
 		// public const string LUADLL = "Assets/XLua/Plugins/OSX/libxlua.so";
 		// public const string LUADLL = "Assets/XLua/Plugins/OSX/xlua.framework/xlua"; // ok
 		public const string XLUADLL = "Assets/XLua/Plugins/OSX/libxlua.dylib"; // ok
-		public const string LUADLL = "Assets/XLua/Plugins/OSX/liblua.dylib"; // ok
+		public const string LUADLL  = "Assets/XLua/Plugins/OSX/liblua.dylib"; // ok
 		// #elif UNITY_IOS
 		// public const string LUADLL = "@rpath/xlua.framework/xlua";
 		#else
-        public const string XLUADLL = "lib/libxlua.dylib";
-        public const string LUADLL  = "lib/liblua.dylib";
+        public const string XLUADLL = "libxlua";
+        public const string LUADLL  = "liblua";
 		#endif
 
         #region lua
