@@ -506,6 +506,8 @@ LUALIB_API int luaopen_i64lib(lua_State* L)
 	lua_setfield(L, -2, "parse");
 	
 	lua_setglobal(L, "uint64");
-	return 0;
+	
+	lua_pushvalue(L, -1);
+	return 1;
 }
 
