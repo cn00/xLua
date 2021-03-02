@@ -1232,9 +1232,12 @@ static const luaL_Reg xlualib[] = {
 	{NULL, NULL}
 };
 
-LUA_API void luaopen_xlua(lua_State *L) {
-	luaL_openlibs(L);
+LUA_API int luaopen_xlua(lua_State *L) {
+	extern luaopen_i64lib(lua_State* L);
+	luaopen_i64lib(L);
 	
+	lua_newtable(L);
+	luaL_setfuncs(L,xlualib,0);
 #if LUA_VERSION_NUM >= 503
 	luaL_newlib(L, xlualib);
 	lua_setglobal(L, "xlua");
@@ -1242,6 +1245,7 @@ LUA_API void luaopen_xlua(lua_State *L) {
 	luaL_register(L, "xlua", xlualib);
     lua_pop(L, 1);
 #endif
-//    luaopen_p7zip(L);
+	lua_pushvalue(L, -1);
+	return 1;
 }
 
