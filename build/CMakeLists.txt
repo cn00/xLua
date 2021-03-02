@@ -4,7 +4,7 @@
 # http://opensource.org/licenses/MIT
 # Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 
 if(x${ROOT_PROJECT_NAME} STREQUAL "x")
     set(ROOT_PROJECT_NAME XLua)
@@ -26,6 +26,8 @@ endif ()
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+# set(CMAKE_SHARED_LIBRARY_PREFIX "lib")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-command-line-argument")
 if(ANDROID)
@@ -101,12 +103,14 @@ add_subdirectory(libexpat/expat)
 add_subdirectory(luaexpat)
 add_subdirectory(lfs)
 
-if( NOT OSX )
-    add_subdirectory(mariadb-connector-c)
-endif(NOT OSX )
-add_subdirectory(luasql)
+# if( NOT OSX  && NOT WINDOWS)
+#     add_subdirectory(mariadb-connector-c)
+# endif(NOT OSX )
+# add_subdirectory(luasql)
 
 add_subdirectory(luasocket)
+
+# add_subdirectory(openssllua)
 
 set(LUA_SRC_PATH lua/)
 

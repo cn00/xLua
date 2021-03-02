@@ -7,7 +7,7 @@ project(socket)
 # add_subdirectory(third_party/flatbuffers)
 # add_subdirectory(../lua binary_dir EXCLUDE_FROM_ALL)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -L${CMAKE_CURRENT_SOURCE_DIR} -std=gnu++11 -stdlib=libc++ ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -L${CMAKE_CURRENT_SOURCE_DIR} -std=gnu++11")
 
 file(GLOB_RECURSE socket_sources *.c *.h **/*.lua)
 file(GLOB_RECURSE socket_mime_sources mime/*.c mime/*.h)
